@@ -22,6 +22,8 @@ using std::string;
 using std::vector;
 using std::shared_ptr;
 using std::getline;
+using std::cout;
+using std::endl;
 
 // Sensor Fusion Indices:
 #define SENSOR_VX 3
@@ -29,11 +31,16 @@ using std::getline;
 #define SENSOR_S 5
 #define SENSOR_D 6
 
-#define TIME_INCREMENT 0.02
+#define TIME_STEP 0.02 // seconds
+#define PATH_LENGTH 30 // meters
 #define PATH_POINTS 50
-#define REFERENCE_VELOCITY 49.5
+#define MAX_VELOCITY 49.5
+#define MIN_VELOCITY 0.0
 #define SPEED_INCREMENT 0.224
 #define SPEED_DECREMENT 0.224
+#define TAILGATE_GAP 40 // s units
+#define LANE_SIZE 4 // meters
+#define LANE_MIDPOINT (int)(LANE_SIZE/2) // meters
 
 void readWaypoints(vector<double> &map_waypoints_x, vector<double> &map_waypoints_y, vector<double> &map_waypoints_s,
                    vector<double> &map_waypoints_dx, vector<double> &map_waypoints_dy, const std::ifstream &in_map_);
@@ -76,19 +83,14 @@ int main() {
     }
 
 
-
-
     // Initialize the autonomous vehicle:
     int lane = 1;   // Car starts out in this lane
-    double ref_vel = (double) REFERENCE_VELOCITY;
+    double ref_vel = MAX_VELOCITY;
 
 //    WorldMap_ world(new WorldMap(map_waypoints_x, map_waypoints_y, map_waypoints_s, map_waypoints_dx, map_waypoints_dy, max_s));
 //    PathPlanner_ pathPlanner (new StationaryPathPlanner());
 //    BehaviorPlanner_ behaviorPlanner (new NoopBehaviorPlanner());
 //    AutonomousVehicle_ ego (new AutonomousVehicle(world, behaviorPlanner, pathPlanner));
-
-
-
 
 
 
@@ -144,36 +146,36 @@ int main() {
                     bool too_close = false;
 
                     // find ref_v to use:
-
                     for (int i = 0; i<sensor_fusion.size(); i++) {
                         float d = sensor_fusion[i][SENSOR_D];
 
                         // other car is in my lane
-                        if ((d < (2 + (4*lane) + 2) && (d > 2+ (4 * lane) - 2))) {
+                        int myLaneStart = (LANE_MIDPOINT + (LANE_SIZE * lane) - LANE_MIDPOINT);
+                        int myLaneEnd = (LANE_MIDPOINT + (LANE_SIZE * lane) + LANE_MIDPOINT);
+                        if (myLaneStart < d && d < myLaneEnd) {
                             double vx = sensor_fusion[i][SENSOR_VX];
                             double vy = sensor_fusion[i][SENSOR_VY];
                             double check_speed = sqrt(vx*vx + vy*vy);
                             double check_car_s = sensor_fusion[i][SENSOR_S];
 
-                            check_car_s+=((double) previous_size * TIME_INCREMENT * check_speed); // If using previous points can project s value out
+                            check_car_s+=((double) previous_size * TIME_STEP * check_speed); // If using previous points can project s value out
 
-                            // Check s values greater than mine and s gap:
-                            if ((check_car_s > car_s) && ((check_car_s < 30))) {
-
-                                  // Do some logic here: Lower reference velocity so we don't crash into the car in front of us,
-                                  // could also flag to try to change lanes
-                                  ref_vel = 29.5;
-
+                            // Check s values greater than mine, that are closer than the acceptable s-gap:
+                            double distance = check_car_s - car_s;
+                            if ((distance > 0) && ((distance < TAILGATE_GAP))) {
+                                cout << "Another car is too close: " << distance << "m" << endl;
+                                too_close = true;
                             }
-
                         }
                     }
 
                     // Reduce or increase the speed gradually
-                    if (too_close) {
-                        ref_vel -= SPEED_INCREMENT;
-                    } else if (ref_vel < 49.5) {
-                        ref_vel += SPEED_DECREMENT;
+                    if (too_close && ref_vel > MIN_VELOCITY) {
+                        ref_vel -= SPEED_DECREMENT;
+                        cout << "[>] Slowing down car to vel " << ref_vel << "m/s" << endl;
+                    } else if (ref_vel < MAX_VELOCITY) {
+                        ref_vel += SPEED_INCREMENT;
+                        cout << "[>>>] Accelerating to vel " << ref_vel << "m/s" << endl;
                     }
 
 
@@ -214,14 +216,13 @@ int main() {
 
                         ptsy.push_back(ref_y_prev);
                         ptsy.push_back(ref_y);
-
                     }
 
 
                     // In frenet, add evenly 30m spaced poitns ahead of the starting reference:
-                    vector<double> next_wp0 = getXY(car_s + 30, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
-                    vector<double> next_wp1 = getXY(car_s + 60, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
-                    vector<double> next_wp2 = getXY(car_s + 90, (2+4*lane), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+                    vector<double> next_wp0 = getXY(car_s + 30, (LANE_MIDPOINT + (LANE_SIZE * lane)), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+                    vector<double> next_wp1 = getXY(car_s + 60, (LANE_MIDPOINT + (LANE_SIZE * lane)), map_waypoints_s, map_waypoints_x, map_waypoints_y);
+                    vector<double> next_wp2 = getXY(car_s + 90, (LANE_MIDPOINT + (LANE_SIZE * lane)), map_waypoints_s, map_waypoints_x, map_waypoints_y);
 
                     ptsx.push_back(next_wp0[0]);
                     ptsx.push_back(next_wp1[0]);
@@ -241,6 +242,7 @@ int main() {
                     }
 
 
+                    // Fit a spline to the wide waypoints, to generate the finer-grained points
                     tk::spline spline;
                     spline.set_points(ptsx, ptsy);
 
@@ -255,14 +257,15 @@ int main() {
                         next_y_vals.push_back(previous_path_y[i]);
                     }
 
-                    double target_x = 30.0;
+                    double target_x = PATH_LENGTH;
                     double target_y = spline(target_x);
                     double target_dist = sqrt((target_x*target_x) + (target_y*target_y));
 
                     double x_add_on = 0;
+
                     // Fill up the REMAINING planned path after filling it with previous points, here we will always output 50 points:
                     for(int i = 1; i<= (PATH_POINTS - previous_path_x.size()); i++) {
-                        double N = (target_dist / (TIME_INCREMENT * ref_vel/2.24));
+                        double N = (target_dist / (TIME_STEP * ref_vel/2.24));
                         double x_point = x_add_on+(target_x)/N;
                         double y_point = spline(x_point);
 
