@@ -85,7 +85,7 @@ int main() {
 
     // Initialize the autonomous vehicle:
     int lane = 1;   // Car starts out in this lane
-    double ref_vel = MAX_VELOCITY;
+    double ref_vel = 0.5;
 
 //    WorldMap_ world(new WorldMap(map_waypoints_x, map_waypoints_y, map_waypoints_s, map_waypoints_dx, map_waypoints_dy, max_s));
 //    PathPlanner_ pathPlanner (new StationaryPathPlanner());
@@ -146,6 +146,7 @@ int main() {
                     bool too_close = false;
 
                     // find ref_v to use:
+                    double closestCarGap = TAILGATE_GAP; // this will adjust to the distance of the closest car (if applicable)
                     for (int i = 0; i<sensor_fusion.size(); i++) {
                         float d = sensor_fusion[i][SENSOR_D];
 
@@ -162,7 +163,8 @@ int main() {
 
                             // Check s values greater than mine, that are closer than the acceptable s-gap:
                             double distance = check_car_s - car_s;
-                            if ((distance > 0) && ((distance < TAILGATE_GAP))) {
+                            if ((distance > 0) && ((distance < closestCarGap))) {
+                                closestCarGap = distance;
                                 cout << "Another car is too close: " << distance << "m" << endl;
                                 too_close = true;
                             }
@@ -171,11 +173,15 @@ int main() {
 
                     // Reduce or increase the speed gradually
                     if (too_close && ref_vel > MIN_VELOCITY) {
-                        ref_vel -= SPEED_DECREMENT;
-                        cout << "[>] Slowing down car to vel " << ref_vel << "m/s" << endl;
+                        double urgency = 1.0 - (closestCarGap / TAILGATE_GAP);
+                        assert (urgency >= 0.0 && urgency <= 1.0);
+                        ref_vel -= SPEED_DECREMENT*urgency;
+                        cout << "[>] Slowing down car to vel " << ref_vel << "m/s (! " << urgency << ")" << endl;
                     } else if (ref_vel < MAX_VELOCITY) {
-                        ref_vel += SPEED_INCREMENT;
-                        cout << "[>>>] Accelerating to vel " << ref_vel << "m/s" << endl;
+                        double urgency = 1.0 - (ref_vel / MAX_VELOCITY);
+                        assert (urgency >= 0.0 && urgency <= 1.0);
+                        ref_vel += SPEED_INCREMENT*urgency;
+                        cout << "[>>>] Accelerating to vel " << ref_vel << "m/s (! " << urgency << ")" << endl;
                     }
 
 
