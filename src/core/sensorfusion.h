@@ -4,11 +4,12 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "trackedvehicle.h"
 
 using std::string;
 using std::vector;
 
-class BaseSensorFusion {
+class SensorFusion {
     public:
         virtual vector<TrackedVehicle> getSurroundingVehicles() = 0;
     private:

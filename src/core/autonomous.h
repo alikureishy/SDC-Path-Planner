@@ -1,23 +1,29 @@
-#ifndef AUTONOMOUS_CAR_H
-#define AUTONOMOUS_CAR_H
+//
+// Created by Admin on 2019-06-04.
+//
 
-#include <iostream>
-#include <string>
-#include <vector>
+#ifndef PATH_PLANNING_AUTONOMOUS_H
+#define PATH_PLANNING_AUTONOMOUS_H
+
 #include "vehicle.h"
-#include "worldmap.h"
 
-using std::string;
-using std::vector;
+using std::shared_ptr;
 
-class AutonomousCar : public Vehicle {
+class AutonomousVehicle {
+    private:
+        WorldMap_ worldMap;
+        BehaviorPlanner_ behaviorPlanner;
+        PathPlanner_ pathPlanner;
+
     public:
-        AutonomousCar(const WorldMap& world) : Vehicle() {
-
+        AutonomousVehicle(WorldMap_ world, BehaviorPlanner_ behaviorPlanner, PathPlanner_ pathPlanner) {
+            this->worldMap = world;
+            this->behaviorPlanner = behaviorPlanner;
+            this->pathPlanner = pathPlanner;
         }
 
-
-
+        tuple<vector<double>, vector<double>> getTrajectory(const SensorFusion& sensorFusion, const Localization& localization, const NavigationContext& navigationContext);
 };
+typedef shared_ptr<AutonomousVehicle> AutonomousVehicle_;
 
-#endif
+#endif //PATH_PLANNING_AUTONOMOUS_H
