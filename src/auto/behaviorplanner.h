@@ -42,24 +42,33 @@ class BehaviorPlanner {
 public:
     BehaviorPlanner (int initial_lane, double initial_speed) : invocation_counter(0), target_behavior(initial_lane, initial_speed) {}
 
+    /**
+     * BEHAVIOR PLANNER:
+     * Outputs:
+     *  - Target velocity
+     *  - Lane #
+     *
+     *  Conditions:
+     *      - Too close to the car infront?
+     *      - Is the car in front traveling slower than max speed limit?
+     *          - Maybe move into the left lane?
+     *              - Is there space to move into the left lane? (YES?)
+     *                  - Scan space (+/- a window of s) in target lane to check this
+     *              - Is there a safe driving distance available to merge into in that lane (or some fraction of that gap)? (YES?)
+     *              - Is the car further down that lane going at speed limit (or faster than the car in front of me)? (YES?)
+     *              - Is the approaching car in that lane (within some fraction of safe driving distance) at same speed or slower than my speed? (YES?)
+     *          -----> Then shift
+     *          Else try right lane.
+     *
+     * The path planner then is responsible for generating a trajectory using the above
+     */
     TargetBehavior planBehavior(const Localization& localization, const Environment& environment) {
-        /* ============================================================== */
-        /**
-        * TODO: define a path made up of (x,y) points that the car will visit
-        *   sequentially every .02 seconds
-        */
         Localization ego(localization);
         cout << "Target speed: " << target_behavior.getSpeed() << " / Actual speed: " << ego.getSpeed() << endl;
-//        assert (abs(target_behavior.getSpeed()-ego.getSpeed()) <= 1.0); // Actual speed should track closely with target speed
         double current_speed = this->target_behavior.getSpeed();    // Assume the car has achieved the target speed
 
         /**
-         * BEHAVIOR PLANNER:
-         * Outputs:
-         *  - Target velocity
-         *  - Lane #
-         *
-         * The path planner then is responsible for generating a trajectory using the above
+         * Are we too close to the car in front?
          */
         bool unsafe_driving_distance = false;
         double closest_car_gap = SAFE_DRIVING_DISTANCE; // this will adjust to the distance of the closest car (if applicable)
