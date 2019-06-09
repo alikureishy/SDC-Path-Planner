@@ -23,11 +23,11 @@ public:
         this->end_path_s = end_path_s;
         this->end_path_d = end_path_d;
         for (int i = 0; i<previous_path_x.size(); i++) {
-            this->trajectory_x.push_back(previous_path_x[i]);
-            this->trajectory_y.push_back(previous_path_y[i]);
+            this->prev_trajectory_x.push_back(previous_path_x[i]);
+            this->prev_trajectory_y.push_back(previous_path_y[i]);
         }
 
-        if (this->trajectory_x.size() > 0) {
+        if (this->prev_trajectory_x.size() > 0) {
             this->s = this->end_path_s; // Pick up the last value of s from the trajectory being followed
         }
 
@@ -60,11 +60,11 @@ public:
     }
 
     const vector<double> &getPrevTrajectory() const {
-        return trajectory_x;
+        return prev_trajectory_x;
     }
 
     const vector<double> &getPrevTrajectoryY() const {
-        return trajectory_y;
+        return prev_trajectory_y;
     }
 
     void setS(double s) {
@@ -93,8 +93,8 @@ private:
     double speed;
     double end_path_s;
     double end_path_d;
-    vector<double> trajectory_x;
-    vector<double> trajectory_y;
+    vector<double> prev_trajectory_x;
+    vector<double> prev_trajectory_y;
 };
 
 #endif //PATH_PLANNING_LOCALIZATION_H
