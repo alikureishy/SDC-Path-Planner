@@ -12,18 +12,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e0f34af0-fd83-4d1d-95c9-9a0f643f7948" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/Path_Planning.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/auto/behaviorplanner.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.CarND-Path-Planning-Project.dir/.idea/contentModel.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.CarND-Path-Planning-Project.dir/.idea/indexLayout.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.CarND-Path-Planning-Project.dir/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.CarND-Path-Planning-Project.dir/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.CarND-Path-Planning-Project.dir/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.idea.CarND-Path-Planning-Project.dir/riderModule.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/auto/constants.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/behaviorplanner.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/localization.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/pathplanner.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/auto/pathplanner.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/sensorfusion.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/auto/environment.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/trackedvehicle.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/vehicle.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/core/vehicle.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/core/worldmap.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/auto/worldmap.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/INSTRUCTIONS.md" beforeDir="false" afterPath="$PROJECT_DIR$/INSTRUCTIONS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/3rdparty/spline.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/3rdparty/spline.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auto/behaviorplanner.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/auto/behaviorplanner.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auto/environment.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/auto/environment.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auto/localization.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/auto/localization.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/auto/pathplanner.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/auto/pathplanner.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -38,12 +41,12 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="true">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="325" selection-start-line="322" selection-end-line="325" />
+            <state relative-caret-position="210">
+              <caret line="116" column="74" selection-start-line="116" selection-start-column="74" selection-end-line="116" selection-end-column="74" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
               </folding>
@@ -51,20 +54,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/auto/worldmap.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="99">
-              <caret line="31" column="28" selection-start-line="31" selection-start-column="28" selection-end-line="31" selection-end-column="28" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/auto/pathplanner.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="219">
-              <caret line="31" column="59" selection-start-line="31" selection-start-column="59" selection-end-line="31" selection-end-column="59" />
+            <state relative-caret-position="659">
+              <caret line="59" column="37" selection-start-line="59" selection-start-column="27" selection-end-line="59" selection-end-column="37" />
+              <folding>
+                <element signature="e#47#64#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -72,8 +69,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/auto/behaviorplanner.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="44" column="96" selection-start-line="44" selection-start-column="32" selection-end-line="44" selection-end-column="96" />
+            <state relative-caret-position="-198">
+              <caret line="68" column="53" lean-forward="true" selection-start-line="68" selection-start-column="53" selection-end-line="68" selection-end-column="53" />
+              <folding>
+                <element signature="e#55#72#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -81,11 +81,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/auto/environment.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="373">
-              <caret line="88" selection-start-line="88" selection-end-line="88" />
-              <folding>
-                <element signature="e#49#68#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="1680">
+              <caret line="112" column="56" selection-start-line="112" selection-start-column="56" selection-end-line="112" selection-end-column="56" />
             </state>
           </provider>
         </entry>
@@ -93,8 +90,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/auto/localization.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="117">
-              <caret line="10" column="24" selection-start-line="10" selection-start-column="24" selection-end-line="10" selection-end-column="24" />
+            <state relative-caret-position="-30">
+              <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
             </state>
           </provider>
         </entry>
@@ -115,10 +112,12 @@
         <option value="$PROJECT_DIR$/src/core/autonomous.h" />
         <option value="$PROJECT_DIR$/src/core/behaviorplanner.h" />
         <option value="$PROJECT_DIR$/src/core/pathplanner.h" />
-        <option value="$PROJECT_DIR$/src/auto/localization.h" />
-        <option value="$PROJECT_DIR$/src/auto/environment.h" />
         <option value="$PROJECT_DIR$/src/auto/worldmap.h" />
+        <option value="$PROJECT_DIR$/src/auto/localization.h" />
+        <option value="$PROJECT_DIR$/src/auto/constants.h" />
+        <option value="$PROJECT_DIR$/src/auto/environment.h" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
+        <option value="$PROJECT_DIR$/src/3rdparty/spline.h" />
         <option value="$PROJECT_DIR$/src/auto/behaviorplanner.h" />
         <option value="$PROJECT_DIR$/src/auto/pathplanner.h" />
         <option value="$PROJECT_DIR$/src/main.cpp" />
@@ -127,9 +126,10 @@
   </component>
   <component name="OCFindUsagesOptions" text="false" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="y" value="23" />
-    <option name="width" value="1440" />
-    <option name="height" value="840" />
+    <option name="x" value="1920" />
+    <option name="y" value="25" />
+    <option name="width" value="1920" />
+    <option name="height" value="990" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -157,13 +157,13 @@
               <item name="Path_Planning" type="b2602c69:ProjectViewProjectNode" />
               <item name="CarND-Path-Planning-Project" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="auto" type="462c0819:PsiDirectoryNode" />
+              <item name="3rdparty" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Path_Planning" type="b2602c69:ProjectViewProjectNode" />
               <item name="CarND-Path-Planning-Project" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="core" type="462c0819:PsiDirectoryNode" />
+              <item name="auto" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Path_Planning" type="b2602c69:ProjectViewProjectNode" />
@@ -197,11 +197,12 @@
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/main.cpp" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="settings.github" />
+    <property name="two.files.diff.last.used.file" value="$PROJECT_DIR$/src/main.cpp" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -226,83 +227,48 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
-      <module name="Path_Planning" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="tests" factoryName="Doctests">
-      <module name="Path_Planning" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="CLASS_NAME" value="" />
-      <option name="METHOD_NAME" value="" />
-      <option name="FOLDER_NAME" value="" />
-      <option name="TEST_TYPE" value="TEST_SCRIPT" />
-      <option name="PATTERN" value="" />
-      <option name="USE_PATTERN" value="false" />
-      <method v="2" />
-    </configuration>
   </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="f83eeab1-4eec-4f68-b002-75253d446a82" name="Default Changelist" comment="" />
+      <changelist id="e0f34af0-fd83-4d1d-95c9-9a0f643f7948" name="Default Changelist" comment="" />
       <created>1559698668054</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1559698668054</updated>
       <workItem from="1559698670251" duration="2550000" />
       <workItem from="1559701450481" duration="15181000" />
+      <workItem from="1560089800243" duration="540000" />
+      <workItem from="1560090456085" duration="252000" />
+      <workItem from="1560090921430" duration="4948000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="23400000" />
+    <option name="totallyTimeSpent" value="41540000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1920" y="25" width="1920" height="990" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2497332" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25773746" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" visible="true" weight="0.32868758" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Database Changes" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="10" />
-      <window_info anchor="bottom" id="CMake" order="11" />
+      <window_info anchor="bottom" id="Messages" order="0" weight="0.329849" />
+      <window_info anchor="bottom" id="Message" order="1" />
+      <window_info anchor="bottom" id="Find" order="2" weight="0.32868758" />
+      <window_info anchor="bottom" id="Run" order="3" weight="0.329849" />
+      <window_info anchor="bottom" id="Debug" order="4" weight="0.39953542" />
+      <window_info anchor="bottom" id="Cvs" order="5" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="6" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="7" />
+      <window_info anchor="bottom" id="Database Changes" order="8" />
+      <window_info anchor="bottom" id="Terminal" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="11" visible="true" weight="0.329849" />
+      <window_info anchor="bottom" id="CMake" order="12" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -312,89 +278,117 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <condition expression="!(m_x[i]&lt;m_x[i+1])" language="ObjectiveC" />
+          <url>file://$PROJECT_DIR$/src/3rdparty/spline.h</url>
+          <line>294</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="breakpointCondition">
+      <expression>
+        <expression-string>!(m_x[i]&lt;m_x[i+1])</expression-string>
+        <language-id>ObjectiveC</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+  </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/utils/helpers.h">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/core/localization.h" />
-    <entry file="file://$PROJECT_DIR$/src/core/vehicle.h">
+    <entry file="file://$PROJECT_DIR$/src/core/trackedvehicle.h" />
+    <entry file="file://$PROJECT_DIR$/src/core/vehicle.h" />
+    <entry file="file://$PROJECT_DIR$/src/core/autonomous.h" />
+    <entry file="file://$PROJECT_DIR$/src/auto/constants.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-          <folding>
-            <element signature="e#37#56#0" expanded="true" />
-          </folding>
+          <caret line="17" column="29" selection-start-line="17" selection-start-column="29" selection-end-line="17" selection-end-column="29" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/autonomous.h">
+    <entry file="file://$PROJECT_DIR$/src/3rdparty/json.hpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" selection-start-line="16" selection-end-line="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/core/trackedvehicle.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
-          <folding>
-            <element signature="e#54#71#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/auto/localization.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="117">
-          <caret line="10" column="24" selection-start-line="10" selection-start-column="24" selection-end-line="10" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/auto/environment.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="373">
-          <caret line="88" selection-start-line="88" selection-end-line="88" />
-          <folding>
-            <element signature="e#49#68#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="132750">
+          <caret line="8850" selection-start-line="8850" selection-end-line="8850" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="141" selection-start-line="9" selection-start-column="141" selection-end-line="9" selection-end-column="141" />
+        <state relative-caret-position="300">
+          <caret line="20" column="38" selection-start-line="20" selection-start-column="38" selection-end-line="20" selection-end-column="38" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/auto/worldmap.h">
+    <entry file="file:///usr/include/assert.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="99">
-          <caret line="31" column="28" selection-start-line="31" selection-start-column="28" selection-end-line="31" selection-end-column="28" />
+        <state relative-caret-position="182">
+          <caret line="91" column="10" selection-start-line="91" selection-start-column="10" selection-end-line="91" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/3rdparty/spline.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="301" column="24" selection-start-line="301" selection-start-column="24" selection-end-line="301" selection-end-column="24" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/auto/behaviorplanner.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="44" column="96" selection-start-line="44" selection-start-column="32" selection-end-line="44" selection-end-column="96" />
+        <state relative-caret-position="-198">
+          <caret line="68" column="53" lean-forward="true" selection-start-line="68" selection-start-column="53" selection-end-line="68" selection-end-column="53" />
+          <folding>
+            <element signature="e#55#72#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/auto/pathplanner.h">
+    <entry file="file://$PROJECT_DIR$/src/auto/worldmap.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="219">
-          <caret line="31" column="59" selection-start-line="31" selection-start-column="59" selection-end-line="31" selection-end-column="59" />
+        <state relative-caret-position="180">
+          <caret line="14" column="47" selection-start-line="14" selection-start-column="47" selection-end-line="14" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/auto/environment.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1680">
+          <caret line="112" column="56" selection-start-line="112" selection-start-column="56" selection-end-line="112" selection-end-column="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/auto/localization.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-30">
+          <caret line="52" lean-forward="true" selection-start-line="52" selection-end-line="52" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="325" selection-start-line="322" selection-end-line="325" />
+        <state relative-caret-position="210">
+          <caret line="116" column="74" selection-start-line="116" selection-start-column="74" selection-end-line="116" selection-end-column="74" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/auto/pathplanner.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="659">
+          <caret line="59" column="37" selection-start-line="59" selection-start-column="27" selection-end-line="59" selection-end-column="37" />
+          <folding>
+            <element signature="e#47#64#0" expanded="true" />
           </folding>
         </state>
       </provider>

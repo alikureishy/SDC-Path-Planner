@@ -4,19 +4,11 @@
 #include <vector>
 #include "localization.h"
 #include "environment.h"
+#include "constants.h"
 
 using std::tuple;
-
-#define TIME_STEP 0.02 // seconds
-#define PATH_LENGTH 30 // meters
-#define PATH_POINTS 50
-#define MAX_VELOCITY 49.5
-#define MIN_VELOCITY 0.0
-#define SPEED_INCREMENT 0.224
-#define SPEED_DECREMENT 0.224
-#define TAILGATE_GAP 40 // s units
-#define LANE_SIZE 4 // meters
-#define LANE_MIDPOINT (int)(LANE_SIZE/2) // meters
+using std::cout;
+using std::endl;
 
 class TargetBehavior {
 public:
@@ -33,6 +25,14 @@ public:
         return speed;
     }
 
+    void setLane(int lane) {
+        TargetBehavior::lane = lane;
+    }
+
+    void setSpeed(double speed) {
+        TargetBehavior::speed = speed;
+    }
+
 private:
     int lane;
     double speed;
@@ -40,11 +40,75 @@ private:
 
 class BehaviorPlanner {
 public:
-    BehaviorPlanner () {}
+    BehaviorPlanner (int initial_lane, double initial_speed) : invocation_counter(0), target_behavior(initial_lane, initial_speed) {}
 
-    TargetBehavior planBehavior(const Localization& localization, const Environment& environment) const {
+    TargetBehavior planBehavior(const Localization& localization, const Environment& environment) {
+        /* ============================================================== */
+        /**
+        * TODO: define a path made up of (x,y) points that the car will visit
+        *   sequentially every .02 seconds
+        */
+        Localization ego(localization);
+        cout << "Target speed: " << target_behavior.getSpeed() << " / Actual speed: " << ego.getSpeed() << endl;
+//        assert (abs(target_behavior.getSpeed()-ego.getSpeed()) <= 1.0); // Actual speed should track closely with target speed
+        double current_speed = this->target_behavior.getSpeed();    // Assume the car has achieved the target speed
 
+        /**
+         * BEHAVIOR PLANNER:
+         * Outputs:
+         *  - Target velocity
+         *  - Lane #
+         *
+         * The path planner then is responsible for generating a trajectory using the above
+         */
+        bool unsafe_driving_distance = false;
+        double closest_car_gap = SAFE_DRIVING_DISTANCE; // this will adjust to the distance of the closest car (if applicable)
+        for (int i = 0; i<environment.getNumCars(); i++) {
+            TrackedVehicle vehicle = environment.getVehicles()[i];
+
+            if (ego.getLane() == vehicle.getLane()) {
+                vehicle.fastForward(ego.getTrajectoryX().size() * TIME_STEP); // Project the vehicle's position forward in time
+
+                // Check s values greater than mine, that are closer than the acceptable s-gap:
+                double distance = vehicle.getS() - ego.getS();
+                if ((distance > 0) && ((distance < closest_car_gap))) {
+                    closest_car_gap = distance;
+                    cout << "Another car is too close: " << distance << "m" << endl;
+                    unsafe_driving_distance = true;
+                }
+            }
+        }
+
+        // See if a lane-change is feasible and beneficial:
+        //  - A lane change is beneficial if:
+        //      - There is no car in that lane that is as close as the car in front
+        //      - There is a car in that lane that is moving faster than the car in front
+
+
+
+
+        // Reduce or increase the speed gradually
+        if (unsafe_driving_distance && (current_speed > MIN_VELOCITY)) {
+            double urgency = 1.0 - (closest_car_gap / SAFE_DRIVING_DISTANCE);
+            assert (urgency >= 0.0 && urgency <= 1.0);
+            double decrement = SPEED_DECREMENT*urgency;
+            target_behavior.setSpeed(current_speed - decrement);
+            cout << "[>] Slowing down car to vel " << current_speed << "m/s (! " << urgency << ")" << endl;
+        } else if (current_speed < MAX_VELOCITY) {
+            double urgency = 1.0 - (current_speed / MAX_VELOCITY);
+            assert (urgency >= 0.0 && urgency <= 1.0);
+            double increment = SPEED_INCREMENT*urgency;
+            target_behavior.setSpeed(current_speed + increment);
+            cout << "[>>>] Accelerating to vel " << current_speed << "m/s (! " << urgency << ")" << endl;
+        }
+
+        this->invocation_counter++;
+        return this->target_behavior;
     }
+
+private:
+    int invocation_counter;
+    TargetBehavior target_behavior;
 };
 
 

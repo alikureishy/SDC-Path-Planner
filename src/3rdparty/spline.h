@@ -292,6 +292,9 @@ void spline::set_points(const std::vector<double>& x,
     int   n=x.size();
     // TODO: maybe sort x and y, rather than returning an error
     for(int i=0; i<n-1; i++) {
+        if (m_x[i] >= m_x[i+1]) {
+            std::cout << "Spline not sorted: (" << m_x[i] << ", " << m_y[i] << ") >= (" << m_x[i+1] << ", " << m_y[i+1] << ")!";
+        }
         assert(m_x[i]<m_x[i+1]);
     }
 
