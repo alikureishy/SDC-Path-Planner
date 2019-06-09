@@ -9,12 +9,11 @@
 #include "3rdparty/spline.h"
 #include "utils/helpers.h"
 
-//#include "core/worldmap.h"
-//#include "core/autonomous.h"
-//#include "core/behaviorplanner.h"
-//#include "core/pathplanner.h"
-//#include "core/sensorfusion.h"
-//#include "core/localization.h"
+#include "auto/worldmap.h"
+#include "auto/environment.h"
+#include "auto/localization.h"
+#include "auto/behaviorplanner.h"
+#include "auto/pathplanner.h"
 
 // for convenience
 using nlohmann::json;
@@ -41,9 +40,6 @@ using std::endl;
 #define TAILGATE_GAP 40 // s units
 #define LANE_SIZE 4 // meters
 #define LANE_MIDPOINT (int)(LANE_SIZE/2) // meters
-
-void readWaypoints(vector<double> &map_waypoints_x, vector<double> &map_waypoints_y, vector<double> &map_waypoints_s,
-                   vector<double> &map_waypoints_dx, vector<double> &map_waypoints_dy, const std::ifstream &in_map_);
 
 int main() {
     uWS::Hub h;
@@ -87,14 +83,12 @@ int main() {
     int lane = 1;   // Car starts out in this lane
     double ref_vel = 0.5;
 
-//    WorldMap_ world(new WorldMap(map_waypoints_x, map_waypoints_y, map_waypoints_s, map_waypoints_dx, map_waypoints_dy, max_s));
-//    PathPlanner_ pathPlanner (new StationaryPathPlanner());
-//    BehaviorPlanner_ behaviorPlanner (new NoopBehaviorPlanner());
-//    AutonomousVehicle_ ego (new AutonomousVehicle(world, behaviorPlanner, pathPlanner));
+//    WorldMap world_map(map_waypoints_x, map_waypoints_y, map_waypoints_s, map_waypoints_dx, map_waypoints_dy, max_s);
+//    BehaviorPlanner behavior_planner;
+//    PathPlanner path_planner(world_map);
 
 
-
-    h.onMessage([&ref_vel, &lane, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
+    h.onMessage([/*&world_map, &behavior_planner, &path_planner, */&ref_vel, &lane, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
                &map_waypoints_dx,&map_waypoints_dy]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
@@ -132,20 +126,42 @@ int main() {
                     // Sensor Fusion Data, a list of all other cars on the same side of the road.
                     auto sensor_fusion = j[1]["sensor_fusion"];
 
+
+                    /**
+                     * Actual path planning:
+                     */
+//                    Localization localization(car_x, car_y, car_s, car_d, car_yaw, car_speed, end_path_s, end_path_d, previous_path_x, previous_path_y);
+//                    Environment environment(sensor_fusion);
+//                    TargetBehavior behavior = behavior_planner.planBehavior(localization, environment);
+//                    Trajectory trajectory = path_planner.planTrajectory(behavior, localization);
+//
+//                    json msgJson;
+//                    msgJson["next_x"] = trajectory.getXPoints();
+//                    msgJson["next_y"] = trajectory.getYPoints();
+
+
+
                     /* ============================================================== */
                     /**
                     * TODO: define a path made up of (x,y) points that the car will visit
                     *   sequentially every .02 seconds
                     */
 
+                    // Determine the present s value of the car
                     int previous_size = previous_path_x.size();
                     if (previous_size > 0) {
                         car_s = end_path_s;
                     }
 
+                    /**
+                     * BEHAVIOR PLANNER:
+                     * Outputs:
+                     *  - Target velocity
+                     *  - Lane #
+                     * 
+                     * The path planner then is responsible for generating a trajectory using the above
+                     */
                     bool too_close = false;
-
-                    // find ref_v to use:
                     double closestCarGap = TAILGATE_GAP; // this will adjust to the distance of the closest car (if applicable)
                     for (int i = 0; i<sensor_fusion.size(); i++) {
                         float d = sensor_fusion[i][SENSOR_D];
@@ -170,6 +186,13 @@ int main() {
                             }
                         }
                     }
+
+                    // See if a lane-change is feasible and beneficial:
+                    //  - A lane change is beneficial if:
+                    //      - There is no car in that lane that is as close as the car in front
+                    //      - There is a car in that lane that is moving faster than the car in front
+
+
 
                     // Reduce or increase the speed gradually
                     if (too_close && ref_vel > MIN_VELOCITY) {
