@@ -12,22 +12,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e0f34af0-fd83-4d1d-95c9-9a0f643f7948" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.CarND-Path-Planning-Project.dir/.idea/contentModel.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.CarND-Path-Planning-Project.dir/.idea/indexLayout.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.CarND-Path-Planning-Project.dir/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.CarND-Path-Planning-Project.dir/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.CarND-Path-Planning-Project.dir/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.CarND-Path-Planning-Project.dir/riderModule.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/auto/constants.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/INSTRUCTIONS.md" beforeDir="false" afterPath="$PROJECT_DIR$/INSTRUCTIONS.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/3rdparty/spline.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/3rdparty/spline.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/auto/behaviorplanner.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/auto/behaviorplanner.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/auto/environment.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/auto/environment.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/auto/localization.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/auto/localization.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/auto/pathplanner.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/auto/pathplanner.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -57,8 +44,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/auto/pathplanner.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="659">
-              <caret line="59" column="37" selection-start-line="59" selection-start-column="27" selection-end-line="59" selection-end-column="37" />
+            <state relative-caret-position="-721">
+              <caret line="60" column="27" selection-start-line="60" selection-start-column="27" selection-end-line="60" selection-end-column="27" />
               <folding>
                 <element signature="e#47#64#0" expanded="true" />
               </folding>
@@ -98,6 +85,11 @@
       </file>
     </leaf>
   </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>trajectory</find>
+    </findStrings>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -119,8 +111,8 @@
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/src/3rdparty/spline.h" />
         <option value="$PROJECT_DIR$/src/auto/behaviorplanner.h" />
-        <option value="$PROJECT_DIR$/src/auto/pathplanner.h" />
         <option value="$PROJECT_DIR$/src/main.cpp" />
+        <option value="$PROJECT_DIR$/src/auto/pathplanner.h" />
       </list>
     </option>
   </component>
@@ -242,12 +234,12 @@
       <workItem from="1559701450481" duration="15181000" />
       <workItem from="1560089800243" duration="540000" />
       <workItem from="1560090456085" duration="252000" />
-      <workItem from="1560090921430" duration="4948000" />
+      <workItem from="1560090921430" duration="5031000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="41540000" />
+    <option name="totallyTimeSpent" value="41623000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1920" y="25" width="1920" height="990" extended-state="6" />
@@ -385,8 +377,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/auto/pathplanner.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="659">
-          <caret line="59" column="37" selection-start-line="59" selection-start-column="27" selection-end-line="59" selection-end-column="37" />
+        <state relative-caret-position="-721">
+          <caret line="60" column="27" selection-start-line="60" selection-start-column="27" selection-end-line="60" selection-end-column="27" />
           <folding>
             <element signature="e#47#64#0" expanded="true" />
           </folding>

@@ -44,8 +44,8 @@ public:
         double ref_yaw = deg2rad(ego.getYaw());
 
         // If previous size is almost empty, use the car current location as starting reference:
-        int trajectory_size = ego.getTrajectoryX().size();
-        if (trajectory_size < 2) {
+        int prev_trajectory_size = ego.getPrevTrajectory().size();
+        if (prev_trajectory_size < 2) {
             // use 2 points that make the path tangent to the car
             double prev_car_x = ego.getX() - cos(ego.getYaw());
             double prev_car_y = ego.getY() - sin(ego.getYaw());
@@ -57,11 +57,11 @@ public:
             spline_points_y.push_back(ego.getY());
         } else {
             // use the previous path's end point as starting reference
-            ref_x = ego.getTrajectoryX()[trajectory_size-1];
-            ref_y = ego.getTrajectoryY()[trajectory_size-1];
+            ref_x = ego.getPrevTrajectory()[prev_trajectory_size-1];
+            ref_y = ego.getPrevTrajectoryY()[prev_trajectory_size-1];
 
-            double ref_x_prev = ego.getTrajectoryX()[trajectory_size-2];
-            double ref_y_prev = ego.getTrajectoryY()[trajectory_size-2];
+            double ref_x_prev = ego.getPrevTrajectory()[prev_trajectory_size-2];
+            double ref_y_prev = ego.getPrevTrajectoryY()[prev_trajectory_size-2];
             ref_yaw = atan2((ref_y-ref_y_prev), (ref_x-ref_x_prev));
 
             // use two points that make the path tanagent to the two previous path's end points:
@@ -107,9 +107,9 @@ public:
 
 
         // First, copy over all the previous path points from the last time
-        for (int i = 0; i<trajectory_size; i++) {
-            next_x_vals.push_back(ego.getTrajectoryX()[i]);
-            next_y_vals.push_back(ego.getTrajectoryY()[i]);
+        for (int i = 0; i<prev_trajectory_size; i++) {
+            next_x_vals.push_back(ego.getPrevTrajectory()[i]);
+            next_y_vals.push_back(ego.getPrevTrajectoryY()[i]);
         }
 
         double target_x = PATH_LENGTH;
@@ -119,7 +119,7 @@ public:
         double x_add_on = 0;
 
         // Fill up the REMAINING planned path after filling it with previous points, here we will always output 50 points:
-        for(int i = 1; i<= (PATH_POINTS - trajectory_size); i++) {
+        for(int i = 1; i<= (PATH_POINTS - prev_trajectory_size); i++) {
             double N = (target_dist / (TIME_STEP * target_behavior.getSpeed()/2.24));
             double x_point = x_add_on+(target_x)/N;
             double y_point = spline(x_point);

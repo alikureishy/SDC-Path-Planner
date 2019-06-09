@@ -59,11 +59,11 @@ public:
         return speed;
     }
 
-    const vector<double> &getTrajectoryX() const {
+    const vector<double> &getPrevTrajectory() const {
         return trajectory_x;
     }
 
-    const vector<double> &getTrajectoryY() const {
+    const vector<double> &getPrevTrajectoryY() const {
         return trajectory_y;
     }
 

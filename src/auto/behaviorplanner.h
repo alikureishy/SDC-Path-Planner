@@ -67,7 +67,7 @@ public:
             TrackedVehicle vehicle = environment.getVehicles()[i];
 
             if (ego.getLane() == vehicle.getLane()) {
-                vehicle.fastForward(ego.getTrajectoryX().size() * TIME_STEP); // Project the vehicle's position forward in time
+                vehicle.fastForward(ego.getPrevTrajectory().size() * TIME_STEP); // Project the vehicle's position forward in time
 
                 // Check s values greater than mine, that are closer than the acceptable s-gap:
                 double distance = vehicle.getS() - ego.getS();
