@@ -116,9 +116,9 @@ public:
             }
         }
 
-        if (invalid_count > 0) {
-            cout << "Improper vehicle telemtry: " << invalid_count << + " vehicles" << endl;
-        }
+//        if (invalid_count > 0) {
+//            cout << "Improper vehicle telemtry: " << invalid_count << + " vehicles" << endl;
+//        }
     }
 
     int getNumCars() const {
