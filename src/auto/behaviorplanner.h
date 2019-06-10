@@ -17,6 +17,7 @@ public:
     TargetBehavior(int lane, double speed) {
         this->lane = lane;
         this->speed = speed;
+        this->change_lane = false;
     }
 
     int getLane() const {
@@ -35,9 +36,18 @@ public:
         TargetBehavior::speed = speed;
     }
 
+    bool isChangeLane() const {
+        return change_lane;
+    }
+
+    void setChangeLane(bool changeLane) {
+        change_lane = changeLane;
+    }
+
 private:
     int lane;
     double speed;
+    bool change_lane;
 };
 
 class BehaviorPlanner {
@@ -64,9 +74,12 @@ public:
      *
      * The path planner then is responsible for generating a trajectory using the above
      */
-    TargetBehavior planBehavior(const Localization& localization, const Environment& environment) {
-        Localization ego(localization);
-        double current_speed = this->target_behavior.getSpeed();    // Assume the car has achieved the target speed
+    TargetBehavior planBehavior(const Localization& localization_state, const Environment& environment_state) {
+        Localization ego(localization_state);
+        Environment environment(environment_state);
+        environment.fastForward(ego.getPrevTrajectory().size() * TIME_STEP);    // Since we're APPENDING planned behavior to the trajectory
+
+        double current_speed_target = this->target_behavior.getSpeed();    // Assume the car has achieved the target speed
 //        cout << "[STATUS] Lane: " << ego.getLane() << " / Target speed: " << target_behavior.getSpeed() << " / Actual speed: " << ego.getSpeed() << endl;
 
         /**
@@ -76,26 +89,26 @@ public:
          */
         int evaluation_lane = ego.getLane();
         int closest_car_idx = getClosestCarInLane(environment, ego, evaluation_lane);
-        double closest_car_gap = closest_car_idx >= 0 ?
+        double frontal_clearance = closest_car_idx >= 0 ?
                                         (abs(ego.getS() - environment.getVehicles()[closest_car_idx].getS()))
                                             :
                                         numeric_limits<double>::max();
-        double closest_car_speed = closest_car_idx >= 0 ?
+        double frontal_car_speed = closest_car_idx >= 0 ?
                                         environment.getVehicles()[closest_car_idx].getSpeed()
                                             :
                                         numeric_limits<double>::max();
-        bool unsafe_driving_distance = closest_car_gap < SAFE_DRIVING_DISTANCE;
-        if (unsafe_driving_distance && (current_speed > MIN_SPEED)) {
-            double urgency = 1.0 - (closest_car_gap / SAFE_DRIVING_DISTANCE);
+        bool unsafe_driving_distance = frontal_clearance < SAFE_DRIVING_DISTANCE;
+        if (unsafe_driving_distance && (current_speed_target > MIN_SPEED)) {
+            double urgency = 1.0 - (frontal_clearance / SAFE_DRIVING_DISTANCE);
             assert (urgency >= 0.0 && urgency <= 1.0);
             double decrement = SPEED_DECREMENT * urgency;
-            target_behavior.setSpeed(current_speed - decrement);
-//            cout << "[COLLISION_AVOIDANCE]: [Gap: " << closest_car_gap << "] [>] Slowing down car to vel " << target_behavior.getSpeed() << "m/s (! " << urgency << ")" << endl;
-        } else if (current_speed < MAX_SPEED) {
-            double urgency = 1.0 - (current_speed / MAX_SPEED);
+            target_behavior.setSpeed(current_speed_target - decrement);
+//            cout << "[COLLISION_AVOIDANCE]: [Gap: " << frontal_clearance << "] [>] Slowing down car to vel " << target_behavior.getSpeed() << "m/s (! " << urgency << ")" << endl;
+        } else if (current_speed_target < MAX_SPEED) {
+            double urgency = 1.0 - (current_speed_target / MAX_SPEED);
             assert (urgency >= 0.0 && urgency <= 1.0);
             double increment = SPEED_INCREMENT * urgency;
-            target_behavior.setSpeed(current_speed + increment);
+            target_behavior.setSpeed(current_speed_target + increment);
 //            cout << "[SPEEDUP]: [>>>] Accelerating to vel " << target_behavior.getSpeed() << "m/s (! " << urgency << ")" << endl;
         } else {
 //            cout << "[CRUISE_CONTROL]: [>>] Maintaining vel at " << target_behavior.getSpeed() << "m/s" << endl;
@@ -105,38 +118,38 @@ public:
          * If we're at an unsafe driving distance AND the car ahead is driving slower than the max speed:
          *  - Evaluate left & right lanes
          */
-         bool nearing_unsafe_distance = closest_car_gap < 2 * SAFE_DRIVING_DISTANCE;
-         bool we_could_go_faster = closest_car_speed < MAX_SPEED;
+         bool nearing_unsafe_distance = frontal_clearance < 2 * SAFE_DRIVING_DISTANCE;
+         bool we_could_go_faster = frontal_car_speed < MAX_SPEED;
          if (nearing_unsafe_distance && we_could_go_faster) {
              // We evaluate the lane immediately to the left of the car, and then to the right of the car (unless it's at the edge)
              for (int evaluation_lane = std::max(0, ego.getLane()-1); evaluation_lane<=std::min(NUM_LANES-1, ego.getLane()+1); evaluation_lane++) {
                  if (evaluation_lane != ego.getLane()) {
                      // Front:
-                     int closest_ahead_car_idx = getClosestCarInLane(environment, ego, evaluation_lane, false);
-                     double closest_ahead_car_gap = closest_ahead_car_idx >= 0 ?
+                     int side_frontal_car_idx = getClosestCarInLane(environment, ego, evaluation_lane, false);
+                     double side_frontal_opening = side_frontal_car_idx >= 0 ?
                                                     (abs(ego.getS() -
-                                                         environment.getVehicles()[closest_ahead_car_idx].getS()))
+                                                         environment.getVehicles()[side_frontal_car_idx].getS()))
                                                                                :
                                                     numeric_limits<double>::max();
-                     double closest_ahead_car_speed = closest_ahead_car_idx >= 0 ?
-                                                      environment.getVehicles()[closest_ahead_car_idx].getSpeed()
+                     double side_frontal_car_speed = side_frontal_car_idx >= 0 ?
+                                                      environment.getVehicles()[side_frontal_car_idx].getSpeed()
                                                                                  :
                                                       numeric_limits<double>::max();
 
                      // Rear:
-                     int closest_behind_car_idx = getClosestCarInLane(environment, ego, evaluation_lane, true);
-                     double closest_behind_car_gap = closest_behind_car_idx >= 0 ?
+                     int side_rear_car_idx = getClosestCarInLane(environment, ego, evaluation_lane, true);
+                     double side_rear_opening = side_rear_car_idx >= 0 ?
                                                      (abs(ego.getS() -
-                                                          environment.getVehicles()[closest_behind_car_idx].getS()))
+                                                          environment.getVehicles()[side_rear_car_idx].getS()))
                                                                                  :
                                                      numeric_limits<double>::max();
-                     double closest_behind_car_speed = closest_behind_car_idx >= 0 ?
-                                                       environment.getVehicles()[closest_behind_car_idx].getSpeed()
+                     double side_rear_car_speed = side_rear_car_idx >= 0 ?
+                                                       environment.getVehicles()[side_rear_car_idx].getSpeed()
                                                                                    :
                                                        numeric_limits<double>::min();
 
                      // Determine mergeability:
-                     double slot_size = std::min(closest_ahead_car_gap, closest_behind_car_gap) * 2;
+                     double side_merge_opening = std::min(side_frontal_opening, side_rear_opening) * 2;
 
                      std::string shift_indicator;
                      if (evaluation_lane > ego.getLane()) {
@@ -145,10 +158,10 @@ public:
                          shift_indicator = "<<";
                      }
                      cout << "[EVALUATE_LANE_CHANGE] [" << ego.getLane() << "==>" << evaluation_lane << "]"
-                                << "] Slot-Size: " << slot_size
-                                    << " / ^^ " << closest_car_gap << " / " << closest_car_speed
-                                    << " / " << shift_indicator << "Δ" << closest_ahead_car_gap << " /" << closest_ahead_car_speed
-                                    << " / " << shift_indicator << "V " << closest_ahead_car_gap << " /" << closest_ahead_car_speed
+                                << "] Slot-Size: " << side_merge_opening
+                                    << " / ^^ " << frontal_clearance << " / " << frontal_car_speed
+                                    << " / " << shift_indicator << "Δ" << side_frontal_opening << " /" << side_frontal_car_speed
+                                    << " / " << shift_indicator << "V " << side_rear_opening << " /" << side_rear_car_speed
                             << endl;
 
                      // Determine merge advantage:
@@ -160,19 +173,19 @@ public:
                      //             - Gap with that car is less than gap with our present lane's car
                      //                 AND
                      //               The car in that lane is traveling faster than the car in our lane
-                     if (slot_size >= MIN_LANE_OPENING &&
-                             (closest_ahead_car_speed > ego.getSpeed() ||
-                             ((closest_ahead_car_gap > closest_car_gap) &&
-                               closest_ahead_car_speed > closest_car_speed))) {
+                     if (side_merge_opening >= MIN_LANE_OPENING &&
+                             (side_frontal_car_speed > ego.getSpeed() ||
+                             ((side_frontal_opening > frontal_clearance) &&
+                               side_frontal_car_speed > frontal_car_speed))) {
                          this->target_behavior.setLane(evaluation_lane);
                          cout << "[LANE_CHANGE] : [<<>>] Shifting to lane # " << evaluation_lane << endl;
 
                          // If the car behind is gaining in, increase spead:
-                         double speed_diff = closest_behind_car_speed - current_speed;
+                         double speed_diff = side_rear_car_speed - current_speed_target;
                          if (speed_diff > 0) {
                              double urgency = std::min(1.0, (speed_diff / MAX_SPEED));
                              double increment = SPEED_INCREMENT * urgency;
-                             target_behavior.setSpeed(current_speed + increment);
+                             target_behavior.setSpeed(current_speed_target + increment);
                              cout << "[LANE_CHANGE] [>>>] Accelerating to vel " << target_behavior.getSpeed()
                                   << "m/s (! " << urgency << ")" << endl;
                          }
@@ -200,10 +213,7 @@ public:
         int closest_car_idx = -1;
         int direction = reverse ? -1 : 1;   // Controls which direction we're going to measure distance
         for (int i = 0; i < environment.getNumCars(); i++) {
-            TrackedVehicle vehicle (environment.getVehicles()[i]);
-
-            // TODO: Can we move this prediction step somewhere else that's cleaner?
-            vehicle.fastForward(ego.getPrevTrajectory().size() * TIME_STEP); // Project the vehicle's position forward in time
+            TrackedVehicle vehicle (environment.getVehicles()[i]); // Make sure to use a copy here
 
             if (vehicle.getLane()==target_lane) {
                 double distance = direction * (vehicle.getS() - ego.getS());    // Direction dictates forward or backward

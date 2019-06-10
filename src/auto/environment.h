@@ -129,6 +129,11 @@ public:
         return vehicles;
     }
 
+    void fastForward(double seconds) {
+        for (TrackedVehicle vehicle: this->vehicles) {
+            vehicle.fastForward(seconds);
+        }
+    }
 
 private:
     int numCars;
