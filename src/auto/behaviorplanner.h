@@ -67,7 +67,7 @@ public:
     TargetBehavior planBehavior(const Localization& localization, const Environment& environment) {
         Localization ego(localization);
         double current_speed = this->target_behavior.getSpeed();    // Assume the car has achieved the target speed
-        cout << "[STATUS] Lane: " << ego.getLane() << " / Target speed: " << target_behavior.getSpeed() << " / Actual speed: " << ego.getSpeed() << endl;
+//        cout << "[STATUS] Lane: " << ego.getLane() << " / Target speed: " << target_behavior.getSpeed() << " / Actual speed: " << ego.getSpeed() << endl;
 
         /**
          * Evaluate current lane:
@@ -138,10 +138,17 @@ public:
                      // Determine mergeability:
                      double slot_size = std::min(closest_ahead_car_gap, closest_behind_car_gap) * 2;
 
-                     cout << "[EVALUATE_LANE_CHANGE --> " << evaluation_lane
+                     std::string shift_indicator;
+                     if (evaluation_lane > ego.getLane()) {
+                         shift_indicator = ">>";
+                     } else if (evaluation_lane < ego.getLane()) {
+                         shift_indicator = "<<";
+                     }
+                     cout << "[EVALUATE_LANE_CHANGE] [" << ego.getLane() << "==>" << evaluation_lane << "]"
                                 << "] Slot-Size: " << slot_size
-                                    << " / ^ " << closest_ahead_car_gap << "/" << closest_ahead_car_speed
-                                    << " / v " << closest_behind_car_gap << "/" << closest_behind_car_speed
+                                    << " / ^^ " << closest_car_gap << " / " << closest_car_speed
+                                    << " / " << shift_indicator << "Δ" << closest_ahead_car_gap << " /" << closest_ahead_car_speed
+                                    << " / " << shift_indicator << "V " << closest_ahead_car_gap << " /" << closest_ahead_car_speed
                             << endl;
 
                      // Determine merge advantage:
@@ -155,7 +162,7 @@ public:
                      //               The car in that lane is traveling faster than the car in our lane
                      if (slot_size >= MIN_LANE_OPENING &&
                              (closest_ahead_car_speed > ego.getSpeed() ||
-                             ((closest_ahead_car_gap < closest_car_gap) &&
+                             ((closest_ahead_car_gap > closest_car_gap) &&
                                closest_ahead_car_speed > closest_car_speed))) {
                          this->target_behavior.setLane(evaluation_lane);
                          cout << "[LANE_CHANGE] : [<<>>] Shifting to lane # " << evaluation_lane << endl;
