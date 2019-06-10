@@ -112,14 +112,14 @@ public:
             next_y_vals.push_back(ego.getPrevTrajectoryY()[i]);
         }
 
-        double target_x = PATH_LENGTH;
+        double target_x = TRAJECTORY_RANGE;
         double target_y = spline(target_x);
         double target_dist = sqrt((target_x*target_x) + (target_y*target_y));
 
         double x_add_on = 0;
 
         // Fill up the REMAINING planned path after filling it with previous points, here we will always output 50 points:
-        for(int i = 1; i<= (PATH_POINTS - prev_trajectory_size); i++) {
+        for(int i = 1; i<= (TRAJECTORY_LENGTH - prev_trajectory_size); i++) {
             double N = (target_dist / (TIME_STEP * target_behavior.getSpeed()/2.24));
             double x_point = x_add_on+(target_x)/N;
             double y_point = spline(x_point);
