@@ -13,13 +13,15 @@
 #define MIN_SPEED 0.0                       // meters/second
 #define SPEED_INCREMENT 0.224               // meters/second
 #define SPEED_DECREMENT 0.224               // meters/second
-#define SAFE_DRIVING_DISTANCE 40            // meters (frenet-S)
+#define SAFE_DRIVING_DISTANCE 20            // meters (frenet-S)
 
 #define NUM_LANES 3                         // units
 #define LANE_SIZE 4                         // meters
 #define LANE_MIDPOINT (int)(LANE_SIZE/2)    // meters
 #define MAX_D + (NUM_LANES * LANE_SIZE)     //
 #define MIN_D - (NUM_LANES * LANE_SIZE)     //
+
+#define MIN_LANE_OPENING 15                 // meters
 
 
 #endif // CONSTANTS_H
