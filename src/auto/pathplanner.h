@@ -28,7 +28,7 @@ private:
 
 class PathPlanner {
 public:
-    PathPlanner(const WorldMap& world_map) : invocation_counter(0), world_map(world_map) {}
+    PathPlanner(const WorldMap& world_map) : world_map(world_map) {}
 
     Trajectory planTrajectory(const StateMachine& target_behavior, const Localization& localization) {
         // Create a list of widely spaced (x,y) waypoints, evenly spaced at 30m
@@ -75,6 +75,10 @@ public:
 
         // In frenet, add evenly 30m spaced poitns ahead of the starting reference:
         int target_lane = target_behavior.getLane();
+        double lane_change_stretch = LANE_CHANGE_DURATION * ego.getSpeed();
+        double lane_shift_distance = abs(ego.getLane()-target_lane) * LANE_SIZE;
+
+        // We have to smooth out the lane_shift_distance over a # of points:
         vector<double> next_wp0 = getXY(ego.getS() + 30, (LANE_MIDPOINT + (LANE_SIZE * target_lane)), world_map.getWaypointsS(), world_map.getWaypointsX(), world_map.getWaypointsY());
         vector<double> next_wp1 = getXY(ego.getS() + 60, (LANE_MIDPOINT + (LANE_SIZE * target_lane)), world_map.getWaypointsS(), world_map.getWaypointsX(), world_map.getWaypointsY());
         vector<double> next_wp2 = getXY(ego.getS() + 90, (LANE_MIDPOINT + (LANE_SIZE * target_lane)), world_map.getWaypointsS(), world_map.getWaypointsX(), world_map.getWaypointsY());
@@ -112,16 +116,16 @@ public:
             next_y_vals.push_back(ego.getPrevTrajectoryY()[i]);
         }
 
-        double target_x = TRAJECTORY_RANGE;
-        double target_y = spline(target_x);
-        double target_dist = sqrt((target_x*target_x) + (target_y*target_y));
+        double x_horizon = TRAJECTORY_HORIZON;
+        double y_horizon = spline(x_horizon);
+        double dist_horizon = sqrt((x_horizon*x_horizon) + (y_horizon*y_horizon));
 
         double x_add_on = 0;
 
         // Fill up the REMAINING planned path after filling it with previous points, here we will always output 50 points:
-        for(int i = 1; i<= (TRAJECTORY_LENGTH - prev_trajectory_size); i++) {
-            double N = (target_dist / (TIME_STEP * target_behavior.getSpeed()/2.24));
-            double x_point = x_add_on+(target_x)/N;
+        for(int i = 1; i<= (NUM_TRAJECTORY_POINTS - prev_trajectory_size); i++) {
+            double N = (dist_horizon / (TIME_STEP * target_behavior.getSpeed()/2.24));
+            double x_point = x_add_on+(x_horizon)/N;
             double y_point = spline(x_point);
 
             x_add_on = x_point;
@@ -140,13 +144,10 @@ public:
             next_y_vals.push_back(y_point);
         }
 
-        this->invocation_counter++;
-
         return Trajectory(next_x_vals, next_y_vals);
     }
 
 private:
-    int invocation_counter;
     WorldMap world_map;
 };
 

@@ -190,10 +190,10 @@ public:
                      bool side_frontal_car_faster_than_car_ahead = side_frontal_car_speed >= frontal_car_speed;
                      bool side_rear_car_slower_than_me = side_rear_car_speed <= ego.getSpeed();
 
-                     bool side_frontal_car_not_a_risk = side_frontal_opening >= MIN_LANE_OPENING || side_frontal_car_faster_than_me;
-                     bool side_rear_car_not_a_risk = side_rear_opening >= MIN_LANE_OPENING || side_rear_car_slower_than_me;
+                     bool side_frontal_car_not_a_risk = side_frontal_opening >= MIN_MERGE_OPENING || side_frontal_car_faster_than_me;
+                     bool side_rear_car_not_a_risk = side_rear_opening >= MIN_MERGE_OPENING || side_rear_car_slower_than_me;
 
-                     bool merge_space_exists = side_merge_opening >= MIN_LANE_OPENING;
+                     bool merge_space_exists = side_merge_opening >= MIN_MERGE_OPENING;
                      bool merge_is_advantageous = side_frontal_car_faster_than_car_ahead || side_frontal_opening_allows_overtake;
                      bool merge_is_safe = side_frontal_car_not_a_risk && side_rear_car_not_a_risk;
 
