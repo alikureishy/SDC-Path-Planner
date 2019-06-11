@@ -24,6 +24,16 @@ string hasData(string s) {
   return "";
 }
 
+/**
+ * Returns the sigmoid of x
+ * @param x
+ * @return
+ */
+double sigmoid(double x) {
+    return 1 / (1 + exp(-x));
+}
+
+
 //
 // Helper functions related to waypoints and converting from XY to Frenet
 //   or vice versa

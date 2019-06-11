@@ -30,7 +30,7 @@ class PathPlanner {
 public:
     PathPlanner(const WorldMap& world_map) : invocation_counter(0), world_map(world_map) {}
 
-    Trajectory planTrajectory(const TargetBehavior& target_behavior, const Localization& localization) {
+    Trajectory planTrajectory(const StateMachine& target_behavior, const Localization& localization) {
         // Create a list of widely spaced (x,y) waypoints, evenly spaced at 30m
         // Later we will interpolate these waypoints with a spline and fill it in with more points to control speed
         vector<double> spline_points_x;

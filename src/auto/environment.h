@@ -42,13 +42,12 @@ public:
         this->speed = sqrt(vx*vx + vy*vy);
         this->s = vehicle_data[SENSOR_S];
         this->d = vehicle_data[SENSOR_D];
-
-        // Find the lane of the car:
-        this->lane = floor(this->d / LANE_SIZE);
     }
 
     void fastForward(double time) {
-        this->s += (time * this->speed);
+        double increment = (time * this->speed);
+        this->s += increment;
+//        cout << "[------>] Fast forwarding vehicle id : " << this->id << " by " << time << " s = " << increment << "m" << endl;
     }
 
     int getId() const {
@@ -84,16 +83,15 @@ public:
     }
 
     void setS(double s) {
-        TrackedVehicle::s = s;
+        this->s = s;
     }
 
     int getLane() const {
-        return lane;
+        return floor(this->d / LANE_SIZE);
     }
 
 private:
     int id;
-    int lane;
     double x;
     double y;
     double vx;
@@ -116,9 +114,9 @@ public:
             }
         }
 
-//        if (invalid_count > 0) {
-//            cout << "Improper vehicle telemtry: " << invalid_count << + " vehicles" << endl;
-//        }
+        if (invalid_count > 0) {
+            cout << "Improper vehicle telemtry: " << invalid_count << + " vehicles" << endl;
+        }
     }
 
     int getNumCars() const {
@@ -136,7 +134,6 @@ public:
     }
 
 private:
-    int numCars;
     vector<TrackedVehicle> vehicles;
 };
 

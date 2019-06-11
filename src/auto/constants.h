@@ -18,10 +18,11 @@
 #define NUM_LANES 3                         // units
 #define LANE_SIZE 4                         // meters
 #define LANE_MIDPOINT (int)(LANE_SIZE/2)    // meters
-#define MAX_D + (NUM_LANES * LANE_SIZE)     //
-#define MIN_D - (NUM_LANES * LANE_SIZE)     //
+#define MIN_D -(NUM_LANES * LANE_SIZE)-1    //
+#define MAX_D +(NUM_LANES * LANE_SIZE)+1    //
 
 #define MIN_LANE_OPENING 15                 // meters
-
+#define LANE_CHANGE_MORATORIUM 25           // cycles
+#define CLEARANCE_ADVANTAGE_MULTIPLIER 10   // units
 
 #endif // CONSTANTS_H

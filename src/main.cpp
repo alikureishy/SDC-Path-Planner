@@ -112,9 +112,9 @@ int main() {
                      *                  Actual path planning
                      *==============================================================
                      */
-                    Localization localization(car_x, car_y, car_s, car_d, car_yaw, car_speed, end_path_s, end_path_d, previous_path_x, previous_path_y);
+                    Localization localization(car_x, car_y, car_s, car_d, car_yaw, car_speed, end_path_s, end_path_d, previous_path_x, previous_path_y, world_map);
                     Environment environment(sensor_fusion);
-                    TargetBehavior behavior = behavior_planner.planBehavior(localization, environment);
+                    StateMachine behavior = behavior_planner.planBehavior(localization, environment);
                     Trajectory trajectory = path_planner.planTrajectory(behavior, localization);
 
                     json msgJson;
