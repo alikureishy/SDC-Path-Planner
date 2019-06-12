@@ -94,8 +94,8 @@ public:
         double longitudinal_shift_inc = abs(longitudinal_shift / NUM_TRAJECTORY_ANCHORS);
 
         if (DEBUG_PATH_PLANNER) {
-            cout << "\t\t[ANCHORS] - D_Shift = " << latitudinal_shift_inc << " (" << latitudinal_shift << "/" << NUM_TRAJECTORY_ANCHORS << ")"
-                 << " - ^_Shift = " << latitudinal_shift_inc << " (" << latitudinal_shift << "/" << NUM_TRAJECTORY_ANCHORS << ")" << endl;
+            cout << "\t\t[ANCHORS] - D_Shift_Inc = " << latitudinal_shift_inc << " (" << latitudinal_shift << "/" << NUM_TRAJECTORY_ANCHORS << ")"
+                 << " - S_Shift_Inc = " << latitudinal_shift_inc << " (" << latitudinal_shift << "/" << NUM_TRAJECTORY_ANCHORS << ")" << endl;
         }
 
         // We have to smooth out the latitudinal and longitudinal shift over a # of points.

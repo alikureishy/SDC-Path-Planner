@@ -20,7 +20,7 @@
  */
 #define LANE_CHANGE_DURATION 3              // seconds  -- This is a smoothing parameter
 #define NUM_TRAJECTORY_ANCHORS 3            // units -- anchor points around which a function will be fitted
-#define TRAJECTORY_HORIZON 10               // meters   -- This is the length of the trajectory we generate
+#define TRAJECTORY_HORIZON 20               // meters   -- This is the length of the trajectory we generate
 #define NUM_TRAJECTORY_POINTS 10            // indices  -- This is the granularity of the trajectory
 
 #define DEBUG_PATH_PLANNER true
@@ -38,7 +38,7 @@
 #define MAX_D +(NUM_LANES * LANE_SIZE)+1    //meters
 
 #define MIN_MERGE_OPENING 15                // meters
-#define LANE_CHANGE_MORATORIUM 100           // cycles
+#define LANE_CHANGE_MORATORIUM 10           // cycles (seconds)
 #define CLEARANCE_ADVANTAGE_MULTIPLIER 4   // units
 
 #define DEBUG_BEHAVIOR_PLANNER true

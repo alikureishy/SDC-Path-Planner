@@ -50,6 +50,14 @@ public:
         invocation_counter++;
     }
 
+    int getInvocationCounter() const {
+        return invocation_counter;
+    }
+
+    int getLastLaneChangeCycle() const {
+        return last_lane_change_cycle;
+    }
+
 private:
     int lane;
     double speed;
@@ -138,9 +146,19 @@ public:
          */
          bool nearing_unsafe_distance = frontal_clearance < 2 * SAFE_DRIVING_DISTANCE;
          bool we_could_go_faster = frontal_car_speed < MAX_SPEED;
+         if (DEBUG_LANE_CHANGE) {
+             cout << "\t\t[NEEDS_CHANGE?]" << endl
+                        << "\t\t\tNo recent change?: " << this->state_machine.noRecentLaneChange() << endl
+                        << "\t\t\t\tLast-Change: " << this->state_machine.getLastLaneChangeCycle() << endl
+                        << "\t\t\t\tCurrent-Cycle: " << this->state_machine.getInvocationCounter() << endl
+                        << "\t\t\tNearing Unsafe: " << nearing_unsafe_distance << endl
+                        << "\t\t\tCould go faster: " << we_could_go_faster << endl
+                        << "\t\t\t\t ====> ";
+         }
          if (nearing_unsafe_distance && we_could_go_faster && this->state_machine.noRecentLaneChange()) {
              if (DEBUG_LANE_CHANGE) {
-                 cout << "\t\t[MERGE_SCAN] .. " << endl;
+                 cout << "YES!" << endl;
+                 cout << "\t\t[SCANNING_SIDES] .. " << endl;
              }
              // We evaluate the lane immediately to the left of the car, and then to the right of the car (unless it's at the edge)
              for (int evaluation_lane = std::max(0, ego.getLane()-1); evaluation_lane<=std::min(NUM_LANES-1, ego.getLane()+1); evaluation_lane++) {
@@ -179,14 +197,6 @@ public:
                          shift_indicator = "|<<<<|";
                      }
 
-                     if (DEBUG_LANE_CHANGE) {
-                         cout << "\t\t[EVALUATE_LANE_CHANGE] [ |" << ego.getLane() << "| ==> |" << evaluation_lane << "|] " << ego.getSpeed() << "m/s" << endl
-                              << "\t\t\t / |^^^^|"              << "^" << frontal_clearance << "m { " << frontal_car_speed << "m/s }" << endl
-                              << "\t\t\t / " << shift_indicator << "Δ" << side_frontal_opening << "m { " << side_frontal_car_speed << "m/s }" << endl
-                              << "\t\t\t / " << shift_indicator << "$" << side_merge_opening << "m" << endl
-                              << "\t\t\t / " << shift_indicator << "V " << side_rear_opening << "m { " << side_rear_car_speed <<"m/s }" << endl;
-                     }
-
                      // Determine merge advantage:
                      //     Switch lanes if:
                      //         - We ahve an opening AND
@@ -209,6 +219,26 @@ public:
                      bool merge_is_advantageous = side_frontal_car_faster_than_car_ahead || side_frontal_opening_allows_overtake;
                      bool merge_is_safe = side_frontal_car_not_a_risk && side_rear_car_not_a_risk;
 
+                     if (DEBUG_LANE_CHANGE) {
+                         cout << "\t\t[EVALUATE_LANE_CHANGE] [ |" << ego.getLane() << "| ==> |" << evaluation_lane << "|] " << ego.getSpeed() << "m/s" << endl
+                              << "\t\t\t|^^^^|"              << " |^|" << frontal_clearance << "m { " << frontal_car_speed << "m/s }" << endl
+                              << "\t\t\t" << shift_indicator << " Δ" << side_frontal_opening << "m { " << side_frontal_car_speed << "m/s }" << endl
+                              << "\t\t\t" << shift_indicator << " []" << side_merge_opening << "m" << endl
+                              << "\t\t\t" << shift_indicator << " V" << side_rear_opening << "m { " << side_rear_car_speed <<"m/s }" << endl
+                              << "\t\t\t[SIDE-FRONTAL]: " << endl
+                              << "\t\t\t\tOpening-Allows-Overtake?: " << side_frontal_opening_allows_overtake << endl
+                              << "\t\t\t\tCar-Faster-Than-Ego?: " << side_frontal_car_faster_than_me << endl
+                              << "\t\t\t\tCar-Faster-Than-Car-Ahead?: " << side_frontal_car_faster_than_me << endl
+                              << "\t\t\t\tCar-Not-A-Collision-Risk?: " << side_frontal_car_not_a_risk << endl
+                              << "\t\t\t[SIDE-REAR]: " << endl
+                              << "\t\t\t\tCar-Slower-Than-Ego?: " << side_rear_car_slower_than_me << endl
+                              << "\t\t\t\tCar-Not-A-Collision-Risk?: " << side_rear_car_not_a_risk << endl
+                              << "\t\t\t[MERGE-CRITERIA]: " << endl
+                              << "\t\t\t\tMerge-Space-Exists?: " << merge_space_exists << endl
+                              << "\t\t\t\tMerge-Is-Advantageous?: " << merge_is_advantageous << endl
+                              << "\t\t\t\tMerge-Is-Safe?: " << merge_is_safe << endl;
+                     }
+
                      if (merge_space_exists && merge_is_advantageous && merge_is_safe) {
                          this->state_machine.setLane(evaluation_lane);
                          this->state_machine.markLaneChanged();
@@ -230,6 +260,8 @@ public:
                      }
                  }
              }
+         } else {
+             cout << "NO!" << endl;
          }
 
 
