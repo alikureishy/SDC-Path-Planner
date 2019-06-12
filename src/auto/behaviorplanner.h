@@ -87,7 +87,7 @@ public:
 
         // Fast-forward to end of existing trajectory (if applicable)
         ego.fastForward();
-        environment.fastForward(ego.getPrevTrajectory().size() * TIME_STEP);    // Since we're APPENDING planned behavior to the trajectory
+        environment.fastForward(ego.getPrevTrajectoryX().size() * TIME_STEP);    // Since we're APPENDING planned behavior to the trajectory
 
 
         /**
@@ -95,7 +95,9 @@ public:
          *  - Are we at a safe driving distance in our current lane?
          *      - Reduce or increase the speed gradually
          */
-        cout << "[STATUS] | " << ego.getLane() << " | with target speed: " << state_machine.getSpeed() << " / Actual speed: " << ego.getSpeed() << " / D: " << ego.getD() << endl;
+        if (DEBUG_BEHAVIOR_PLANNER) {
+            cout << "\t[BEHAVIOR] Ego: | " << ego.getLane() << " | with target speed: " << state_machine.getSpeed() << " / Actual speed: " << ego.getSpeed() << " / D: " << ego.getD() << endl;
+        }
 
         int evaluation_lane = ego.getLane();
         int closest_car_idx = getClosestCarInLane(environment, ego, evaluation_lane);
@@ -110,18 +112,22 @@ public:
         bool unsafe_driving_distance = frontal_clearance < SAFE_DRIVING_DISTANCE;
         double current_speed_target = this->state_machine.getSpeed();    // Assume the car has achieved the target speed
         if (unsafe_driving_distance && (current_speed_target > MIN_SPEED)) {
-            cout << "\t\t[ | XX | ] [--> " << frontal_clearance << "m -->]" << endl;
             double urgency = 1.0 - (frontal_clearance / SAFE_DRIVING_DISTANCE);
             assert (urgency >= 0.0 && urgency <= 1.0);
             double decrement = SPEED_DECREMENT * urgency;
-            state_machine.setSpeed(current_speed_target - decrement);
-            cout << "\t[vvvvv]: Slowing to velocity " << state_machine.getSpeed() << "m/s (Urgency: " << urgency << ")" << endl;
+            this->state_machine.setSpeed(current_speed_target - decrement);
+            if (DEBUG_LANE_KEEP) {
+                cout << "\t\t[ | XX | ] [--> " << frontal_clearance << "m -->]" << endl;
+                cout << "\t\t\t[vvvvv]: Slowing to velocity " << state_machine.getSpeed() << "m/s (Urgency: " << urgency << ")" << endl;
+            }
         } else if (current_speed_target < MAX_SPEED) {
             double urgency = 1.0 - (current_speed_target / MAX_SPEED);
             assert (urgency >= 0.0 && urgency <= 1.0);
             double increment = SPEED_INCREMENT * urgency;
-            state_machine.setSpeed(current_speed_target + increment);
-            cout << "\t[^^^^^]: Accelerating to vel " << state_machine.getSpeed() << "m/s (Urgency: " << urgency << ")" << endl;
+            this->state_machine.setSpeed(current_speed_target + increment);
+            if (DEBUG_LANE_KEEP) {
+                cout << "\t\t[^^^^^]: Accelerating to vel " << state_machine.getSpeed() << "m/s (Urgency: " << urgency << ")" << endl;
+            }
         } else {
 //            cout << "[CRUISE_CONTROL]: [>>] Maintaining vel at " << state_machine.getSpeed() << "m/s" << endl;
         }
@@ -133,6 +139,9 @@ public:
          bool nearing_unsafe_distance = frontal_clearance < 2 * SAFE_DRIVING_DISTANCE;
          bool we_could_go_faster = frontal_car_speed < MAX_SPEED;
          if (nearing_unsafe_distance && we_could_go_faster && this->state_machine.noRecentLaneChange()) {
+             if (DEBUG_LANE_CHANGE) {
+                 cout << "\t\t[MERGE_SCAN] .. " << endl;
+             }
              // We evaluate the lane immediately to the left of the car, and then to the right of the car (unless it's at the edge)
              for (int evaluation_lane = std::max(0, ego.getLane()-1); evaluation_lane<=std::min(NUM_LANES-1, ego.getLane()+1); evaluation_lane++) {
                  if (evaluation_lane != ego.getLane()) {
@@ -169,11 +178,14 @@ public:
                      } else if (evaluation_lane < ego.getLane()) {
                          shift_indicator = "|<<<<|";
                      }
-                     cout << "[EVALUATE_LANE_CHANGE] [ |" << ego.getLane() << "| ==> |" << evaluation_lane << "|] " << ego.getSpeed() << "m/s" << endl
-                                << "\t / |^^^^|"              << "^" << frontal_clearance << "m { " << frontal_car_speed << "m/s }" << endl
-                                << "\t / " << shift_indicator << "Δ" << side_frontal_opening << "m { " << side_frontal_car_speed << "m/s }" << endl
-                                << "\t / " << shift_indicator << "$" << side_merge_opening << "m" << endl
-                                << "\t / " << shift_indicator << "V " << side_rear_opening << "m { " << side_rear_car_speed <<"m/s }" << endl;
+
+                     if (DEBUG_LANE_CHANGE) {
+                         cout << "\t\t[EVALUATE_LANE_CHANGE] [ |" << ego.getLane() << "| ==> |" << evaluation_lane << "|] " << ego.getSpeed() << "m/s" << endl
+                              << "\t\t\t / |^^^^|"              << "^" << frontal_clearance << "m { " << frontal_car_speed << "m/s }" << endl
+                              << "\t\t\t / " << shift_indicator << "Δ" << side_frontal_opening << "m { " << side_frontal_car_speed << "m/s }" << endl
+                              << "\t\t\t / " << shift_indicator << "$" << side_merge_opening << "m" << endl
+                              << "\t\t\t / " << shift_indicator << "V " << side_rear_opening << "m { " << side_rear_car_speed <<"m/s }" << endl;
+                     }
 
                      // Determine merge advantage:
                      //     Switch lanes if:
@@ -200,7 +212,9 @@ public:
                      if (merge_space_exists && merge_is_advantageous && merge_is_safe) {
                          this->state_machine.setLane(evaluation_lane);
                          this->state_machine.markLaneChanged();
-                         cout << "[LANE_CHANGE] : [<<>>] Shifting to lane # " << evaluation_lane << endl;
+                         if (DEBUG_LANE_CHANGE) {
+                             cout << "\t\t[LANE_CHANGE] : [<<>>] Shifting to lane # " << evaluation_lane << endl;
+                         }
 
                          // If the car behind is gaining in, increase spead:
                          double speed_diff = side_rear_car_speed - current_speed_target;
@@ -208,8 +222,9 @@ public:
                              double urgency = std::min(1.0, (speed_diff / MAX_SPEED));
                              double increment = SPEED_INCREMENT * urgency;
                              state_machine.setSpeed(current_speed_target + increment);
-                             cout << "[LANE_CHANGE] [>>>] Accelerating to vel " << state_machine.getSpeed()
-                                  << "m/s (! " << urgency << ")" << endl;
+                             if (DEBUG_LANE_CHANGE) {
+                                 cout << "\t\t\t[LANE_CHANGE] [>>>] Accelerating to vel " << state_machine.getSpeed() << "m/s (! " << urgency << ")" << endl;
+                             }
                          }
                          break;
                      }
@@ -244,9 +259,13 @@ public:
                     closest_car_idx = i;
                 } else {
                 }
-                cout << "\t\t[ | ~~ | ] Vehicle ID: " << vehicle.getD() << " | " << vehicle.getLane() << " | " << distance << " m ahead (d= " << vehicle.getD() << ")" << endl;
+                if (DEBUG_ENVIRONMENT_STATUS) {
+                    cout << "\t\t\t[ | ~~ | ] Vehicle ID: " << vehicle.getD() << " | " << vehicle.getLane() << " | " << distance << " m ahead (d= " << vehicle.getD() << ")" << endl;
+                }
             } else {
-                cout << "\t\t[ ------ ] Vehicle ID: " << vehicle.getD() << " | " << vehicle.getLane() << " | at s= " << vehicle.getS() << " / d= " << vehicle.getD() << endl;
+                if (DEBUG_ENVIRONMENT_STATUS) {
+                    cout << "\t\t\t[ ------ ] Vehicle ID: " << vehicle.getD() << " | " << vehicle.getLane() << " | at s= " << vehicle.getS() << " / d= " << vehicle.getD() << endl;
+                }
             }
         }
         return closest_car_idx;

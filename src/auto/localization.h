@@ -25,6 +25,9 @@ public:
         this->end_path_s = end_path_s;
         this->end_path_d = end_path_d;
 
+        if (DEBUG_LOCALIZATION) {
+            cout << "\t[LOCALIZATION] (S, D): (" << car_s << ", " << car_d << ") - Trajectory-Length: " << previous_path_x.size() << " - (X, Y, YAW): (" << car_x << ", " << car_y << ", " << car_yaw << ") - (END(S, D)): " << end_path_s << ", " << end_path_d << ")" << endl;
+        }
         for (int i = 0; i<previous_path_x.size(); i++) {
             this->prev_trajectory_x.push_back(previous_path_x[i]);
             this->prev_trajectory_y.push_back(previous_path_y[i]);
@@ -45,7 +48,9 @@ public:
             double increment = this->speed * timelapse;
             this->s+= increment;  // TODO: Need to convert x/y to s/d to get accurate value for d
                                                                     // Right now it's just a projection
-            cout << "[======>] Fast forwarding ego by " << timelapse << " seconds ( " << steps << " steps of frenet-S = " << increment << "m)" << endl;
+            if (DEBUG_LOCALIZATION) {
+                cout << "\t\t[======>] Fast forwarding ego by " << timelapse << " seconds ( " << steps << " steps of frenet-S = " << increment << "m)" << endl;
+            }
         }
     }
 
@@ -73,7 +78,7 @@ public:
         return speed;
     }
 
-    const vector<double> &getPrevTrajectory() const {
+    const vector<double> &getPrevTrajectoryX() const {
         return prev_trajectory_x;
     }
 

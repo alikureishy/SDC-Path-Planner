@@ -110,12 +110,17 @@ public:
             if (TrackedVehicle::isValid(sensor_data[i])) {
                 vehicles.push_back(TrackedVehicle(sensor_data[i]));
             } else {
+                if (DEBUG_TELEMETRY) {
+                    cout << "\t[TELEMETRY] Skipping vehicle " << sensor_data[i][SENSOR_ID] << " with D: " << sensor_data[i][SENSOR_D] << endl;
+                }
                 invalid_count++;
             }
         }
 
         if (invalid_count > 0) {
-            cout << "Improper vehicle telemtry: " << invalid_count << + " vehicles" << endl;
+            if (DEBUG_TELEMETRY) {
+                cout << "\t[TELEMETRY]Improper vehicle telemtry: " << invalid_count << +" vehicles" << endl;
+            }
         }
     }
 

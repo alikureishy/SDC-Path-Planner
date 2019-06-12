@@ -4,10 +4,12 @@
 #include <vector>
 #include "../3rdparty/spline.h"
 #include "worldmap.h"
+#include "math.h"
 
 using std::tuple;
 using std::make_tuple;
 using std::shared_ptr;
+using std::max;
 
 class Trajectory {
 public:
@@ -43,8 +45,11 @@ public:
         double ref_y = ego.getY();
         double ref_yaw = deg2rad(ego.getYaw());
 
+        if (DEBUG_PATH_PLANNER) {
+            cout << "\t[PATH_PLANNING] - Target-Lane : " << target_behavior.getLane() << " - Target-Speed : " << target_behavior.getSpeed() << endl;
+        }
         // If previous size is almost empty, use the car current location as starting reference:
-        int prev_trajectory_size = ego.getPrevTrajectory().size();
+        int prev_trajectory_size = ego.getPrevTrajectoryX().size();
         if (prev_trajectory_size < 2) {
             // use 2 points that make the path tangent to the car
             double prev_car_x = ego.getX() - cos(ego.getYaw());
@@ -55,12 +60,16 @@ public:
 
             spline_points_y.push_back(prev_car_y);
             spline_points_y.push_back(ego.getY());
+
+            if (DEBUG_PATH_PLANNER) {
+                cout << "\t\t[START_PATH] : Last: (" << ego.getX() << ", " << ego.getY() << ") - Before-Last (" << prev_car_x << ", " << prev_car_y << ")" << endl;
+            }
         } else {
             // use the previous path's end point as starting reference
-            ref_x = ego.getPrevTrajectory()[prev_trajectory_size-1];
+            ref_x = ego.getPrevTrajectoryX()[prev_trajectory_size-1];
             ref_y = ego.getPrevTrajectoryY()[prev_trajectory_size-1];
 
-            double ref_x_prev = ego.getPrevTrajectory()[prev_trajectory_size-2];
+            double ref_x_prev = ego.getPrevTrajectoryX()[prev_trajectory_size-2];
             double ref_y_prev = ego.getPrevTrajectoryY()[prev_trajectory_size-2];
             ref_yaw = atan2((ref_y-ref_y_prev), (ref_x-ref_x_prev));
 
@@ -70,38 +79,57 @@ public:
 
             spline_points_y.push_back(ref_y_prev);
             spline_points_y.push_back(ref_y);
+
+            if (DEBUG_PATH_PLANNER) {
+                cout << "\t\t[CONT_PATH] : Last: (" << ref_x << ", " << ref_y << ") - Before-Last (" << ref_x_prev << ", " << ref_y_prev << ")" << endl;
+            }
         }
 
-
-        // In frenet, add evenly 30m spaced poitns ahead of the starting reference:
+        // Add anchor points ahead of the starting reference:
+        int current_lane = ego.getLane();
         int target_lane = target_behavior.getLane();
-        double lane_change_stretch = LANE_CHANGE_DURATION * ego.getSpeed();
-        double lane_shift_distance = abs(ego.getLane()-target_lane) * LANE_SIZE;
+        double latitudinal_shift = (target_lane - current_lane) * LANE_SIZE; // -ve means left, +ve means right
+        double latitudinal_shift_inc = latitudinal_shift / NUM_TRAJECTORY_ANCHORS;
+        double longitudinal_shift = max<double>(TRAJECTORY_HORIZON, LANE_CHANGE_DURATION * target_behavior.getSpeed());
+        double longitudinal_shift_inc = abs(longitudinal_shift / NUM_TRAJECTORY_ANCHORS);
 
-        // We have to smooth out the lane_shift_distance over a # of points:
-        vector<double> next_wp0 = getXY(ego.getS() + 30, (LANE_MIDPOINT + (LANE_SIZE * target_lane)), world_map.getWaypointsS(), world_map.getWaypointsX(), world_map.getWaypointsY());
-        vector<double> next_wp1 = getXY(ego.getS() + 60, (LANE_MIDPOINT + (LANE_SIZE * target_lane)), world_map.getWaypointsS(), world_map.getWaypointsX(), world_map.getWaypointsY());
-        vector<double> next_wp2 = getXY(ego.getS() + 90, (LANE_MIDPOINT + (LANE_SIZE * target_lane)), world_map.getWaypointsS(), world_map.getWaypointsX(), world_map.getWaypointsY());
+        if (DEBUG_PATH_PLANNER) {
+            cout << "\t\t[ANCHORS] - D_Shift = " << latitudinal_shift_inc << " (" << latitudinal_shift << "/" << NUM_TRAJECTORY_ANCHORS << ")"
+                 << " - ^_Shift = " << latitudinal_shift_inc << " (" << latitudinal_shift << "/" << NUM_TRAJECTORY_ANCHORS << ")" << endl;
+        }
 
-        spline_points_x.push_back(next_wp0[0]);
-        spline_points_x.push_back(next_wp1[0]);
-        spline_points_x.push_back(next_wp2[0]);
+        // We have to smooth out the latitudinal and longitudinal shift over a # of points.
+        // Collect anchor points for that transition:
+        for (int i = 0; i<NUM_TRAJECTORY_ANCHORS; i++) {
+            double progressive_d_shift = i * latitudinal_shift_inc;
+            double progressive_s_shift = i * longitudinal_shift_inc;
+            vector<double> anchor = getXY(ego.getS() + progressive_s_shift, // S-shift
+                                          LANE_MIDPOINT + (current_lane * LANE_SIZE) + progressive_d_shift, // D-shift
+                                          world_map.getWaypointsS(),
+                                          world_map.getWaypointsX(), // Worldmap-Xs
+                                          world_map.getWaypointsY());
 
-        spline_points_y.push_back(next_wp0[1]);
-        spline_points_y.push_back(next_wp1[1]);
-        spline_points_y.push_back(next_wp2[1]);
+            // Add to spline
+            spline_points_x.push_back(anchor[0]);   // x-coordinate
+            spline_points_y.push_back(anchor[1]);   // y-coordinate
+        }
 
-        // Shift frame to 0 degrees for all the widely spaced points:
-        for (int i = 0; i < spline_points_x.size() ; i++) {
+        // Shift frame to 0 degrees for all the anchor points:
+        for (int i = 0; i<spline_points_x.size(); i++) {
+            // Translation
             double shift_x = spline_points_x[i] - ref_x;
             double shift_y = spline_points_y[i] - ref_y;
 
+            // Shift frame to 0 degrees
             spline_points_x[i] = (shift_x * cos(0 - ref_yaw) - shift_y * sin(0 - ref_yaw));
             spline_points_y[i] = (shift_x * sin(0 - ref_yaw) + shift_y * cos(0 - ref_yaw));
+
+            if (DEBUG_ANCHORS) {
+                cout << "\t\t\t[X/Y] - (" << spline_points_x[i] << ", " << spline_points_y[i] << ")" << endl;
+            }
         }
 
-
-        // Fit a spline to the wide waypoints, to generate the finer-grained points
+        // Fit a spline to the anchor points, to generate the finer-grained points
         tk::spline spline;
         spline.set_points(spline_points_x, spline_points_y);
 
@@ -111,9 +139,15 @@ public:
 
 
         // First, copy over all the previous path points from the last time
+        if (DEBUG_TRAJECTORY) {
+            cout << "\t\t[TRAJECTORY]: (~) Prev Count: " << prev_trajectory_size << " - (*) Additional Count: " << NUM_TRAJECTORY_POINTS << endl;
+        }
         for (int i = 0; i<prev_trajectory_size; i++) {
-            next_x_vals.push_back(ego.getPrevTrajectory()[i]);
+            next_x_vals.push_back(ego.getPrevTrajectoryX()[i]);
             next_y_vals.push_back(ego.getPrevTrajectoryY()[i]);
+            if (DEBUG_TRAJECTORY) {
+                cout << "\t\t\t~[X/Y] - (" << ego.getPrevTrajectoryX()[i] << ", " << ego.getPrevTrajectoryY()[i] << ")" << endl;
+            }
         }
 
         double x_horizon = TRAJECTORY_HORIZON;
@@ -122,7 +156,7 @@ public:
 
         double x_add_on = 0;
 
-        // Fill up the REMAINING planned path after filling it with previous points, here we will always output 50 points:
+        // Fill up the REMAINING planned path after filling it with previous points, here we will always output ALL points:
         for(int i = 1; i<= (NUM_TRAJECTORY_POINTS - prev_trajectory_size); i++) {
             double N = (dist_horizon / (TIME_STEP * target_behavior.getSpeed()/2.24));
             double x_point = x_add_on+(x_horizon)/N;
@@ -142,6 +176,10 @@ public:
 
             next_x_vals.push_back(x_point);
             next_y_vals.push_back(y_point);
+
+            if (DEBUG_TRAJECTORY) {
+                cout << "\t\t\t*[X/Y] - (" << ego.getPrevTrajectoryX()[i] << ", " << ego.getPrevTrajectoryY()[i] << ")" << endl;
+            }
         }
 
         return Trajectory(next_x_vals, next_y_vals);
