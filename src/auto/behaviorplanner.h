@@ -209,8 +209,8 @@ public:
                      bool side_frontal_opening_allows_overtake = side_frontal_opening > frontal_clearance * CLEARANCE_ADVANTAGE_MULTIPLIER;
 
                      bool side_frontal_car_faster_than_me = side_frontal_car_speed > ego.getSpeed();
-                     bool side_frontal_car_faster_than_car_ahead = side_frontal_car_speed >= frontal_car_speed;
-                     bool side_rear_car_slower_than_me = side_rear_car_speed <= ego.getSpeed();
+                     bool side_frontal_car_faster_than_car_ahead = side_frontal_car_speed >= (frontal_car_speed * SPEED_ADVANTAGE_MULTIPLIER); // Should be at least 25% faster
+                     bool side_rear_car_slower_than_me = (side_rear_car_speed * SPEED_ADVANTAGE_MULTIPLIER) <= ego.getSpeed(); // Should be at least 25% slower than me
 
                      bool side_frontal_car_not_a_risk = side_frontal_opening >= MIN_MERGE_OPENING || side_frontal_car_faster_than_me;
                      bool side_rear_car_not_a_risk = side_rear_opening >= MIN_MERGE_OPENING || side_rear_car_slower_than_me;

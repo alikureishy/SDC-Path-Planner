@@ -38,8 +38,9 @@
 #define MAX_D +(NUM_LANES * LANE_SIZE)+1    //meters
 
 #define MIN_MERGE_OPENING 15                // meters
-#define LANE_CHANGE_MORATORIUM 200           // cycles (seconds)
-#define CLEARANCE_ADVANTAGE_MULTIPLIER 3   // units
+#define LANE_CHANGE_MORATORIUM 200          // cycles (seconds)
+#define CLEARANCE_ADVANTAGE_MULTIPLIER 3    // 300% percentage
+#define SPEED_ADVANTAGE_MULTIPLIER 1.25     // 125% percentage
 
 #define DEBUG_BEHAVIOR_PLANNER true
 #define DEBUG_ENVIRONMENT_STATUS false
