@@ -218,13 +218,14 @@ public:
                      bool merge_space_exists = side_merge_opening >= MIN_MERGE_OPENING;
                      bool merge_is_advantageous = side_frontal_car_faster_than_car_ahead || side_frontal_opening_allows_overtake;
                      bool merge_is_safe = side_frontal_car_not_a_risk && side_rear_car_not_a_risk;
+                     bool lets_change_lane = merge_space_exists && merge_is_advantageous && merge_is_safe;
 
                      if (DEBUG_LANE_CHANGE) {
                          cout << "\t\t[EVALUATE_LANE_CHANGE] [ |" << ego.getLane() << "| ==> |" << evaluation_lane << "|] " << ego.getSpeed() << "m/s" << endl
-                              << "\t\t\t|^^^^|"              << " |^|" << frontal_clearance << "m { " << frontal_car_speed << "m/s }" << endl
-                              << "\t\t\t" << shift_indicator << " Δ" << side_frontal_opening << "m { " << side_frontal_car_speed << "m/s }" << endl
-                              << "\t\t\t" << shift_indicator << " []" << side_merge_opening << "m" << endl
-                              << "\t\t\t" << shift_indicator << " V" << side_rear_opening << "m { " << side_rear_car_speed <<"m/s }" << endl
+                              << "\t\t\t|^^^^|"              << " [^] " << frontal_clearance << "m { " << frontal_car_speed << "m/s }" << endl
+                              << "\t\t\t" << shift_indicator << " [Δ] " << side_frontal_opening << "m { " << side_frontal_car_speed << "m/s }" << endl
+                              << "\t\t\t" << shift_indicator << " [ ] " << side_merge_opening << "m" << endl
+                              << "\t\t\t" << shift_indicator << " [V] " << side_rear_opening << "m { " << side_rear_car_speed <<"m/s }" << endl
                               << "\t\t\t[SIDE-FRONTAL]: " << endl
                               << "\t\t\t\tOpening-Allows-Overtake?: " << side_frontal_opening_allows_overtake << endl
                               << "\t\t\t\tCar-Faster-Than-Ego?: " << side_frontal_car_faster_than_me << endl
@@ -236,10 +237,11 @@ public:
                               << "\t\t\t[MERGE-CRITERIA]: " << endl
                               << "\t\t\t\tMerge-Space-Exists?: " << merge_space_exists << endl
                               << "\t\t\t\tMerge-Is-Advantageous?: " << merge_is_advantageous << endl
-                              << "\t\t\t\tMerge-Is-Safe?: " << merge_is_safe << endl;
+                              << "\t\t\t\tMerge-Is-Safe?: " << merge_is_safe << endl
+                              << "\t\t\t\t\t==> DECISION?: " << (lets_change_lane ? "CHANGE" : "NO-CHANGE") << endl;
                      }
 
-                     if (merge_space_exists && merge_is_advantageous && merge_is_safe) {
+                     if (lets_change_lane) {
                          this->state_machine.setLane(evaluation_lane);
                          this->state_machine.markLaneChanged();
                          if (DEBUG_LANE_CHANGE) {
@@ -283,6 +285,10 @@ public:
         double closest_car_gap = numeric_limits<double>::max(); // maximum integer
         int closest_car_idx = -1;
         int direction = reverse ? -1 : 1;   // Controls which direction we're going to measure distance
+        string directionality = reverse ? "V" : "Δ";
+        if (DEBUG_ENVIRONMENT_STATUS) {
+            cout << "\t\t\t[ o-o => | " << directionality << " " << check_lane << "? " << directionality << " | ]" << endl;
+        }
         for (int i = 0; i < environment.getNumCars(); i++) {
             TrackedVehicle vehicle (environment.getVehicles()[i]); // Make sure to use a copy here
 
@@ -294,14 +300,25 @@ public:
                 } else {
                 }
                 if (DEBUG_ENVIRONMENT_STATUS) {
-                    cout << "\t\t\t[ | ~~ | ] Vehicle ID: " << vehicle.getD() << " | " << vehicle.getLane() << " | " << distance << " m ahead (d= " << vehicle.getD() << ")" << endl;
-                }
-            } else {
-                if (DEBUG_ENVIRONMENT_STATUS) {
-                    cout << "\t\t\t[ ------ ] Vehicle ID: " << vehicle.getD() << " | " << vehicle.getLane() << " | at s= " << vehicle.getS() << " / d= " << vehicle.getD() << endl;
+                    cout << "\t\t\t\t[ | ~~ | ] Vehicle ID: " << vehicle.getId() << " | " << vehicle.getLane() << " | " << distance << " m ahead (d= " << vehicle.getD() << ")" << endl;
                 }
             }
+//            else {
+//                if (DEBUG_ENVIRONMENT_STATUS) {
+//                    cout << "\t\t\t\t[ ------ ] Vehicle ID: " << vehicle.getId() << " | " << vehicle.getLane() << " | at s= " << vehicle.getS() << " / d= " << vehicle.getD() << endl;
+//                }
+//            }
         }
+
+        if (DEBUG_ENVIRONMENT_STATUS) {
+            if (closest_car_idx >= 0) {
+                TrackedVehicle vehicle = environment.getVehicles()[closest_car_idx];
+                cout << "\t\t\t\t\t[ | -oo- | ] Vehicle ID: " << vehicle.getId() << " | " << vehicle.getLane() << " | " << closest_car_gap << "m away (d= " << vehicle.getD() << ")" << endl;
+            } else {
+                cout << "\t\t\t\t\t[ | ~~~ | ] Lane | " << check_lane << " | empty in direction : " << directionality << endl;
+            }
+        }
+
         return closest_car_idx;
     }
 

@@ -66,9 +66,10 @@ int main() {
     BehaviorPlanner behavior_planner (1, 0.5);
     cout << "Building path planner..." << endl;
     PathPlanner path_planner(world_map);
+    int cycles = 0;
 
 
-    h.onMessage([&world_map, &behavior_planner, &path_planner, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
+    h.onMessage([&cycles, &world_map, &behavior_planner, &path_planner, &map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
                &map_waypoints_dx,&map_waypoints_dy]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
@@ -112,6 +113,7 @@ int main() {
                      *                  Actual path planning
                      *==============================================================
                      */
+                    cout <<" -- " << ++cycles << " -- " << endl;
                     Localization localization(car_x, car_y, car_s, car_d, car_yaw, car_speed, end_path_s, end_path_d, previous_path_x, previous_path_y, world_map);
                     Environment environment(sensor_fusion);
                     StateMachine behavior = behavior_planner.planBehavior(localization, environment);
