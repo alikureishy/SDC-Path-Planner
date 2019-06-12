@@ -23,9 +23,9 @@
 #define TRAJECTORY_HORIZON 20               // meters   -- This is the length of the trajectory we generate
 #define NUM_TRAJECTORY_POINTS 10            // indices  -- This is the granularity of the trajectory
 
-#define DEBUG_PATH_PLANNER true
+#define DEBUG_PATH_PLANNER false
 #define DEBUG_ANCHORS true
-#define DEBUG_TRAJECTORY true
+#define DEBUG_TRAJECTORY false
 
 /**
  * BEHAVIORAL PLANNING
@@ -38,8 +38,8 @@
 #define MAX_D +(NUM_LANES * LANE_SIZE)+1    //meters
 
 #define MIN_MERGE_OPENING 15                // meters
-#define LANE_CHANGE_MORATORIUM 10           // cycles (seconds)
-#define CLEARANCE_ADVANTAGE_MULTIPLIER 4   // units
+#define LANE_CHANGE_MORATORIUM 15           // cycles (seconds)
+#define CLEARANCE_ADVANTAGE_MULTIPLIER 3   // units
 
 #define DEBUG_BEHAVIOR_PLANNER true
 #define DEBUG_ENVIRONMENT_STATUS true

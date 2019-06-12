@@ -87,24 +87,28 @@ public:
 
         // Add anchor points ahead of the starting reference:
         int current_lane = ego.getLane();
-        int target_lane = target_behavior.getLane();
-        double latitudinal_shift = (target_lane - current_lane) * LANE_SIZE; // -ve means left, +ve means right
-        double latitudinal_shift_inc = latitudinal_shift / NUM_TRAJECTORY_ANCHORS;
+        double current_d = ego.getD();
+        double current_s = ego.getS();
+        double target_d = target_behavior.getLane() * LANE_SIZE + LANE_MIDPOINT;
+//        double latitudinal_shift = (target_d - current_d); // -ve means left, +ve means right
+//        double latitudinal_shift_inc = latitudinal_shift / NUM_TRAJECTORY_ANCHORS;
         double longitudinal_shift = max<double>(TRAJECTORY_HORIZON, LANE_CHANGE_DURATION * target_behavior.getSpeed());
-        double longitudinal_shift_inc = abs(longitudinal_shift / NUM_TRAJECTORY_ANCHORS);
+        double longitudinal_shift_inc = longitudinal_shift / NUM_TRAJECTORY_ANCHORS;
+        double target_s = ego.getS() + longitudinal_shift;
+        assert (longitudinal_shift_inc > 0);
 
         if (DEBUG_PATH_PLANNER) {
-            cout << "\t\t[ANCHORS] - D_Shift_Inc = " << latitudinal_shift_inc << " (" << latitudinal_shift << "/" << NUM_TRAJECTORY_ANCHORS << ")"
-                 << " - S_Shift_Inc = " << latitudinal_shift_inc << " (" << latitudinal_shift << "/" << NUM_TRAJECTORY_ANCHORS << ")" << endl;
+            cout << "\t\t[ANCHORS] - (Current-D -> Target_D) = " << current_d << " -> " << target_d
+                 << " - (Current-S -> Target-S) = " << current_s << ", " << target_s << " - S_Shift_Inc = " << longitudinal_shift_inc << " (" << longitudinal_shift << "/" << NUM_TRAJECTORY_ANCHORS << ")" << endl;
         }
 
         // We have to smooth out the latitudinal and longitudinal shift over a # of points.
         // Collect anchor points for that transition:
         for (int i = 0; i<NUM_TRAJECTORY_ANCHORS; i++) {
-            double progressive_d_shift = i * latitudinal_shift_inc;
+//            double progressive_d_shift = (i+1) * latitudinal_shift_inc;
             double progressive_s_shift = (i+1) * longitudinal_shift_inc;
             vector<double> anchor = getXY(ego.getS() + progressive_s_shift, // S-shift
-                                          LANE_MIDPOINT + (current_lane * LANE_SIZE) + progressive_d_shift, // D-shift
+                                          target_d, // ego.getD() + progressive_d_shift, // D-shift
                                           world_map.getWaypointsS(),
                                           world_map.getWaypointsX(), // Worldmap-Xs
                                           world_map.getWaypointsY());

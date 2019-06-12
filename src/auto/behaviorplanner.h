@@ -261,7 +261,9 @@ public:
                  }
              }
          } else {
-             cout << "NO!" << endl;
+             if (DEBUG_LANE_CHANGE) {
+                 cout << "NO!" << endl;
+             }
          }
 
 
