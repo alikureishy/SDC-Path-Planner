@@ -32,14 +32,14 @@
  */
 #define SPEED_INCREMENT 0.224               // meters/second
 #define SPEED_DECREMENT 0.224               // meters/second
-#define SAFE_DRIVING_DISTANCE 60            // meters (frenet-S)
+#define SAFE_DRIVING_DISTANCE 30            // meters (frenet-S)
 
 #define MIN_D -(NUM_LANES * LANE_SIZE)-1    //meters
 #define MAX_D +(NUM_LANES * LANE_SIZE)+1    //meters
 
 #define MIN_MERGE_OPENING 15                // meters
 #define LANE_CHANGE_MORATORIUM 100           // cycles
-#define CLEARANCE_ADVANTAGE_MULTIPLIER 10   // units
+#define CLEARANCE_ADVANTAGE_MULTIPLIER 4   // units
 
 #define DEBUG_BEHAVIOR_PLANNER true
 #define DEBUG_ENVIRONMENT_STATUS true

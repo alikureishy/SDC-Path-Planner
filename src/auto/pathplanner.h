@@ -102,7 +102,7 @@ public:
         // Collect anchor points for that transition:
         for (int i = 0; i<NUM_TRAJECTORY_ANCHORS; i++) {
             double progressive_d_shift = i * latitudinal_shift_inc;
-            double progressive_s_shift = i * longitudinal_shift_inc;
+            double progressive_s_shift = (i+1) * longitudinal_shift_inc;
             vector<double> anchor = getXY(ego.getS() + progressive_s_shift, // S-shift
                                           LANE_MIDPOINT + (current_lane * LANE_SIZE) + progressive_d_shift, // D-shift
                                           world_map.getWaypointsS(),
@@ -178,7 +178,7 @@ public:
             next_y_vals.push_back(y_point);
 
             if (DEBUG_TRAJECTORY) {
-                cout << "\t\t\t*[X/Y] - (" << ego.getPrevTrajectoryX()[i] << ", " << ego.getPrevTrajectoryY()[i] << ")" << endl;
+                cout << "\t\t\t*[X/Y] - (" << x_point << ", " << y_point << ")" << endl;
             }
         }
 
