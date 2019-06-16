@@ -20,7 +20,7 @@ The localization piece takes the information presently known about the car, also
 In this project, all we predict about other cars, and therefore also about ourselves, is the future s-coordinate. This proves sufficient to implement behavior and path planning. 
 
 
-## Behavior Planning
+### Behavior Planning
 
 This component is equivalent to the navigator that determines the best course of action at each point in time (after assessing a set of available options). It usually entails using a state machine appraoch, with a multitude of states that teh car can go through, as it navigates through traffic.
 
@@ -39,7 +39,7 @@ Each time the behavior planner is invoked, it generates a target that consists o
     - it is safe (that is, the car ahead is not slowing down, and the car behind isn't speeding up)
 
 
-## Path Planning (Trajectory Generation)
+### Path Planning (Trajectory Generation)
 
 The path planner takes as input the behavior decided by the behavioral planner:
  - target speed, and 
